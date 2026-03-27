@@ -6,16 +6,16 @@ import Link from 'next/link';
 import { BalanceDisplay, EntryRow } from '@lunero/ui';
 import type { EntryFormValues } from '@lunero/ui';
 import type { Entry, Category } from '@lunero/core';
-import { useFlowSheet, useUnlockFlowSheet, flowSheetKeys } from '../../../lib/hooks/use-flow-sheets';
-import { useEntries, useUpdateEntry, useDeleteEntry } from '../../../lib/hooks/use-entries';
-import { useCategories } from '../../../lib/hooks/use-categories';
-import { useProfile } from '../../../lib/hooks/use-profile';
-import { useEntryStore } from '../../../lib/store/entry-store';
-import { EntryList } from '../../../components/dashboard/entry-list';
-import { EntryModal } from '../../../components/dashboard/entry-modal';
-import { DeleteConfirmDialog } from '../../../components/dashboard/delete-confirm-dialog';
+import { useFlowSheet, useUnlockFlowSheet, flowSheetKeys } from '../../../../lib/hooks/use-flow-sheets';
+import { useEntries, useUpdateEntry, useDeleteEntry } from '../../../../lib/hooks/use-entries';
+import { useCategories } from '../../../../lib/hooks/use-categories';
+import { useProfile } from '../../../../lib/hooks/use-profile';
+import { useEntryStore } from '../../../../lib/store/entry-store';
+import { EntryList } from '../../../../components/dashboard/entry-list';
+import { EntryModal } from '../../../../components/dashboard/entry-modal';
+import { DeleteConfirmDialog } from '../../../../components/dashboard/delete-confirm-dialog';
 import { useQueryClient } from '@tanstack/react-query';
-import { formatPeriodLabel } from '../../../lib/locale-utils';
+import { formatPeriodLabel } from '../../../../lib/locale-utils';
 
 type ModalState =
   | { type: 'closed' }
