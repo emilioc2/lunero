@@ -1,0 +1,32 @@
+{
+  "name": "@lunero/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@lunero/core": "*",
+    "@lunero/ui": "*",
+    "@lunero/api-client": "*",
+    "@clerk/nextjs": "^5.2.4",
+    "@tamagui/core": "^1.110.0",
+    "@tamagui/next-plugin": "^1.110.0",
+    "@tanstack/react-query": "^5.51.1",
+    "next": "14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "typescript": "^5",
+    "vitest": "^1.6.0"
+  }
+}

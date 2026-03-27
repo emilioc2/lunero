@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Coding Best Practices",
+  "description": "Reminds the agent to follow frontend and backend coding best practices for the Lunero stack (Next.js, Tamagui, Spring Boot) on every write operation.",
+  "version": "1",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": [
+      "write"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Before writing or modifying this file, verify the following best practices apply:\n\nFrontend (Next.js / React / Tamagui):\n- Use Tamagui components instead of platform-native or raw HTML elements where an equivalent exists\n- Prefer Server Components by default; use Client Components only when interactivity or browser APIs are needed\n- Keep components small and focused; extract reusable logic into hooks or packages/core\n- Use kebab-case for file names, PascalCase for components/types, camelCase for variables/functions\n- Avoid inline styles; use Tamagui tokens and theme values\n- Ensure accessible markup (roles, aria labels, keyboard navigation)\n\nBackend (Spring Boot / Spring AI):\n- Follow RESTful conventions for endpoint naming and HTTP method usage\n- Keep controllers thin; business logic belongs in service classes\n- Use DTOs for request/response payloads; never expose JPA entities directly\n- Handle errors with a global exception handler (@ControllerAdvice)\n- Currency conversion must always happen server-side, never client-side\n- Validate inputs with Bean Validation (@Valid, @NotNull, etc.)\n- Use snake_case for database table and column names\n\nGeneral:\n- No hardcoded secrets or credentials; use environment variables\n- Keep functions and methods small and single-purpose\n- Write self-documenting code; add comments only where intent is non-obvious\n\nProceed with the write only if these practices are being followed."
+  }
+}

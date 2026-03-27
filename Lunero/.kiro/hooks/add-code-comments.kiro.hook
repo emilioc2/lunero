@@ -1,0 +1,20 @@
+{
+  "enabled": true,
+  "name": "Add Code Comments",
+  "description": "When a code file is edited, prompt the agent to add meaningful comments to improve code readability.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.js",
+      "**/*.jsx",
+      "**/*.java"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review the edited file and add meaningful inline comments to improve code readability. Focus on explaining non-obvious logic, function purposes, and complex expressions. Follow the project's naming conventions and keep comments concise and useful."
+  }
+}

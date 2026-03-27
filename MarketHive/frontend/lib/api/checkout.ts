@@ -25,23 +25,29 @@ export interface PaymentIntentResponse {
 }
 
 export const checkoutApi = {
-  validateCart: async (cartId: number): Promise<{ message: string; item_count: number }> => {
-    const response = await api.post('/v1/checkout/validate', { cart_id: cartId })
-    return response.data
-  },
-
-  calculateTotals: async (cartId: number, shippingAddress: Partial<ShippingAddress>): Promise<CheckoutTotals> => {
-    const response = await api.post('/v1/checkout/calculate', {
-      cart_id: cartId,
-      shipping_address: shippingAddress
+  validateCart: async (cartId: number, token: string): Promise<{ message: string; item_count: number }> => {
+    const response = await api.post('/v1/checkout/validate', { cart_id: cartId }, {
+      headers: { Authorization: `Bearer ${token}` }
     })
     return response.data
   },
 
-  createPaymentIntent: async (cartId: number, shippingAddress: ShippingAddress): Promise<PaymentIntentResponse> => {
+  calculateTotals: async (cartId: number, shippingAddress: Partial<ShippingAddress>, token: string): Promise<CheckoutTotals> => {
+    const response = await api.post('/v1/checkout/calculate', {
+      cart_id: cartId,
+      shipping_address: shippingAddress
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return response.data
+  },
+
+  createPaymentIntent: async (cartId: number, shippingAddress: ShippingAddress, token: string): Promise<PaymentIntentResponse> => {
     const response = await api.post('/v1/checkout/payment', {
       cart_id: cartId,
       shipping_address: shippingAddress
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
     })
     return response.data
   }

@@ -50,7 +50,8 @@ export interface StoreInfo {
 
 export const storefrontApi = {
   getStoreBySubdomain: async (subdomain: string): Promise<StoreInfo> => {
-    const response = await api.get<StoreInfo>(`/v1/stores/${subdomain}`)
+    // Backend route: GET /api/v1/stores/by-subdomain/:subdomain
+    const response = await api.get<StoreInfo>(`/v1/stores/by-subdomain/${subdomain}`)
     return response.data
   },
 

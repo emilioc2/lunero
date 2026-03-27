@@ -18,7 +18,7 @@ export default function CheckoutPage() {
   const router = useRouter()
   const subdomain = params.subdomain as string
   const { cart, refreshCart } = useCart()
-  const { isAuthenticated } = useCustomerAuth()
+  const { isAuthenticated, accessToken } = useCustomerAuth()
 
   const [store, setStore] = useState<StoreInfo | null>(null)
   const [storeLoading, setStoreLoading] = useState(true)
@@ -87,7 +87,7 @@ export default function CheckoutPage() {
         country: shippingAddress.country,
         state: shippingAddress.state,
         zip: shippingAddress.zip
-      })
+      }, accessToken!)
       
       setTotals(calculatedTotals)
       setCurrentStep('review')
@@ -103,10 +103,10 @@ export default function CheckoutPage() {
       setValidating(true)
       
       // Validate cart
-      await checkoutApi.validateCart(cart!.cart_id)
+      await checkoutApi.validateCart(cart!.cart_id, accessToken!)
       
       // Create payment intent
-      const paymentIntent = await checkoutApi.createPaymentIntent(cart!.cart_id, shippingAddress)
+      const paymentIntent = await checkoutApi.createPaymentIntent(cart!.cart_id, shippingAddress, accessToken!)
       
       setClientSecret(paymentIntent.client_secret)
       setTotals(paymentIntent.totals)

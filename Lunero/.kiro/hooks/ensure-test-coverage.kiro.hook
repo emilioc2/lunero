@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Ensure 80% Test Coverage",
+  "description": "After each spec task completes, reminds the agent to verify that test coverage meets the 80% threshold where applicable",
+  "version": "1",
+  "when": {
+    "type": "postTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review the code changes made in this task. If the code is testable (business logic, services, utilities, API endpoints), ensure there is at least 80% test coverage. Write or update tests as needed to meet this threshold. Skip coverage checks for config files, boilerplate, and pure UI layout code."
+  }
+}

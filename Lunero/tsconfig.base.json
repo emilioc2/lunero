@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "isolatedModules": true,
+    "paths": {
+      "@lunero/ui": ["./packages/ui/src"],
+      "@lunero/ui/*": ["./packages/ui/src/*"],
+      "@lunero/core": ["./packages/core/src"],
+      "@lunero/core/*": ["./packages/core/src/*"],
+      "@lunero/api-client": ["./packages/api-client/src"],
+      "@lunero/api-client/*": ["./packages/api-client/src/*"]
+    }
+  }
+}
