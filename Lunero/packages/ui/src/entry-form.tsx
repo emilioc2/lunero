@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Text, Stack } from '@tamagui/core';
+import { Text } from '@tamagui/core';
 import type { EntryType, Category, ValidationResult } from '@lunero/core';
 import { validateEntry } from '@lunero/core';
 import { XStack, YStack } from './primitives';
@@ -138,7 +138,7 @@ export function EntryForm({
           placeholder="0.00"
           aria-describedby={errors['amount'] ? 'entry-amount-error' : undefined}
           aria-invalid={touched['amount'] && !!errors['amount']}
-          style={inputStyle(touched['amount'] && !!errors['amount'])}
+          style={inputStyle(!!(touched['amount'] && errors['amount']))}
         />
       </FormField>
 
@@ -155,7 +155,7 @@ export function EntryForm({
           onBlur={() => setTouched((p) => ({ ...p, categoryId: true }))}
           aria-describedby={errors['categoryId'] ? 'entry-category-error' : undefined}
           aria-invalid={touched['categoryId'] && !!errors['categoryId']}
-          style={inputStyle(touched['categoryId'] && !!errors['categoryId'])}
+          style={inputStyle(!!(touched['categoryId'] && errors['categoryId']))}
         >
           <option value="">Select a category</option>
           {filteredCategories.map((cat) => (
@@ -196,7 +196,7 @@ export function EntryForm({
           onBlur={() => setTouched((p) => ({ ...p, entryDate: true }))}
           aria-describedby={errors['entryDate'] ? 'entry-date-error' : undefined}
           aria-invalid={touched['entryDate'] && !!errors['entryDate']}
-          style={inputStyle(touched['entryDate'] && !!errors['entryDate'])}
+          style={inputStyle(!!(touched['entryDate'] && errors['entryDate']))}
         />
       </FormField>
 
