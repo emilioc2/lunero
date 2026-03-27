@@ -12,7 +12,7 @@ import { CategoryGroup } from '../../../components/categories/category-group';
 import { sortByLocale } from '../../../lib/locale-utils';
 
 // Brand colors per entry type — Olive Gray / Clay Red / Warm Earth (product.md design tokens)
-export const TYPE_COLORS: Record<string, string> = {
+const TYPE_COLORS: Record<string, string> = {
   income: '#6B6F69',
   expense: '#C86D5A',
   savings: '#C4A484',
