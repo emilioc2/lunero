@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { TrendChart } from '@lunero/ui';
-import type { TrendView, TrendPeriod } from '@lunero/api-client';
+import type { TrendView, TrendPeriod, TrendQueryParams } from '@lunero/api-client';
 import { useTrends, useTrendBreakdown } from '../../../lib/hooks/use-trends';
 import { useCategories } from '../../../lib/hooks/use-categories';
 import { useProfile } from '../../../lib/hooks/use-profile';
@@ -24,7 +24,20 @@ export default function TrendsPage() {
   const currency = profile?.defaultCurrency ?? 'USD';
 
   const trendParams = useMemo(
-    () => ({ view, ...(selectedCategoryId ? { categoryId: selectedCategoryId } : {}) }),
+    () => {
+      const params: TrendQueryParams = { view, ...(selectedCategoryId ? { categoryId: selectedCategoryId } : {}) };
+      // Backend requires from/to for weekly and monthly views
+      if (view === 'weekly' || view === 'monthly') {
+        const now = new Date();
+        const to = now.toISOString().split('T')[0]!;
+        // Default range: 6 months back for weekly, 12 months for monthly
+        const monthsBack = view === 'weekly' ? 6 : 12;
+        const fromDate = new Date(now.getFullYear(), now.getMonth() - monthsBack, 1);
+        params.from = fromDate.toISOString().split('T')[0]!;
+        params.to = to;
+      }
+      return params;
+    },
     [view, selectedCategoryId],
   );
 

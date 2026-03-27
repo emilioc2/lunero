@@ -69,27 +69,32 @@ export default function OnboardingPage() {
 
   async function handleDisplayName(displayName: string) {
     setWizard((w) => ({ ...w, displayName }));
-    await advanceTo(2);
+    setStep(2);
+    await updateProfile.mutateAsync({ displayName, onboardingStep: 2 });
   }
 
   async function handleCurrency(defaultCurrency: string) {
     setWizard((w) => ({ ...w, defaultCurrency }));
-    await advanceTo(3);
+    setStep(3);
+    await updateProfile.mutateAsync({ defaultCurrency, onboardingStep: 3 });
   }
 
   async function handlePeriod(flowsheetPeriod: PeriodType) {
     setWizard((w) => ({ ...w, flowsheetPeriod }));
-    await advanceTo(4);
+    setStep(4);
+    await updateProfile.mutateAsync({ flowsheetPeriod, onboardingStep: 4 });
   }
 
   async function handleTheme(themePreference: ThemePreference) {
     setWizard((w) => ({ ...w, themePreference }));
-    await advanceTo(5);
+    setStep(5);
+    await updateProfile.mutateAsync({ themePreference, onboardingStep: 5 });
   }
 
   async function handleNotifications(overspendAlerts: boolean) {
     setWizard((w) => ({ ...w, overspendAlerts }));
-    await advanceTo(6);
+    setStep(6);
+    await updateProfile.mutateAsync({ overspendAlerts, onboardingStep: 6 });
   }
 
   async function handleComplete() {

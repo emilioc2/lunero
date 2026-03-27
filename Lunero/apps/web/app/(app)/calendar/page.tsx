@@ -10,6 +10,7 @@ import { useCategories } from '../../../lib/hooks/use-categories';
 import { useProfile } from '../../../lib/hooks/use-profile';
 import { useEntryStore } from '../../../lib/store/entry-store';
 import { EntryModal } from '../../../components/dashboard/entry-modal';
+import { SUPPORTED_CURRENCIES } from '../../../components/onboarding/step-currency';
 
 type ModalState =
   | { type: 'closed' }
@@ -258,6 +259,7 @@ export default function CalendarPage() {
           mode="create"
           categories={categories}
           defaultCurrency={defaultCurrency}
+          supportedCurrencies={SUPPORTED_CURRENCIES}
           prefillDate={modal.prefillDate}
           onSubmit={handleCreate}
           onClose={() => setModal({ type: 'closed' })}
@@ -271,6 +273,7 @@ export default function CalendarPage() {
           entry={modal.entry}
           categories={categories}
           defaultCurrency={defaultCurrency}
+          supportedCurrencies={SUPPORTED_CURRENCIES}
           onSubmit={handleEdit}
           onClose={() => setModal({ type: 'closed' })}
           isSubmitting={updateEntry.isPending}

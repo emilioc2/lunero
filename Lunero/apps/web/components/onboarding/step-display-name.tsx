@@ -45,7 +45,7 @@ export function StepDisplayName({ value, onNext }: Props) {
             if (error) setError('');
           }}
           onKeyDown={(e) => e.key === 'Enter' && handleNext()}
-          placeholder="e.g. Alex"
+          placeholder="Kevin"
           maxLength={100}
           autoFocus
           aria-describedby={error ? 'display-name-error' : undefined}

@@ -16,6 +16,7 @@ import { EntryModal } from '../../../../components/dashboard/entry-modal';
 import { DeleteConfirmDialog } from '../../../../components/dashboard/delete-confirm-dialog';
 import { useQueryClient } from '@tanstack/react-query';
 import { formatPeriodLabel } from '../../../../lib/locale-utils';
+import { SUPPORTED_CURRENCIES } from '../../../../components/onboarding/step-currency';
 
 /** Discriminated union for the single-modal pattern — only one dialog can be open at a time. */
 type ModalState =
@@ -220,6 +221,7 @@ export default function PastFlowSheetDetailPage() {
           entry={modal.entry}
           categories={categories}
           defaultCurrency={defaultCurrency}
+          supportedCurrencies={SUPPORTED_CURRENCIES}
           onSubmit={handleEdit}
           onClose={() => setModal({ type: 'closed' })}
           isSubmitting={updateEntry.isPending}

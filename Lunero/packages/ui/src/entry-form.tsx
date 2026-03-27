@@ -60,8 +60,25 @@ export function EntryForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
+  // Category search state
+  const [categorySearch, setCategorySearch] = useState(() => {
+    if (initialValues?.categoryId) {
+      const match = categories.find((c) => c.id === initialValues.categoryId);
+      return match?.name ?? '';
+    }
+    return '';
+  });
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
   // Only show categories matching the selected entry type (income/expense/savings)
   const filteredCategories = categories.filter((c) => c.entryType === values.entryType);
+
+  // Filter suggestions based on search text
+  const suggestions = categorySearch.trim()
+    ? filteredCategories.filter((c) =>
+        c.name.toLowerCase().includes(categorySearch.toLowerCase()),
+      )
+    : filteredCategories;
 
   const set = useCallback(<K extends keyof EntryFormValues>(key: K, value: EntryFormValues[K]) => {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -90,6 +107,8 @@ export function EntryForm({
   const handleEntryTypeChange = useCallback((type: EntryType) => {
     setValues((prev) => ({ ...prev, entryType: type, categoryId: '' }));
     setTouched((prev) => ({ ...prev, entryType: true, categoryId: false }));
+    setCategorySearch('');
+    setShowSuggestions(false);
   }, []);
 
   return (
@@ -146,28 +165,84 @@ export function EntryForm({
         />
       </FormField>
 
-      {/* Category */}
+      {/* Category — text input with search suggestions */}
       <FormField
         label="Category"
         htmlFor="entry-category"
         error={touched['categoryId'] ? errors['categoryId'] : undefined}
       >
-        <select
-          id="entry-category"
-          value={values.categoryId}
-          onChange={(e) => set('categoryId', e.target.value)}
-          onBlur={() => setTouched((p) => ({ ...p, categoryId: true }))}
-          aria-describedby={errors['categoryId'] ? 'entry-category-error' : undefined}
-          aria-invalid={touched['categoryId'] && !!errors['categoryId']}
-          style={inputStyle(!!(touched['categoryId'] && errors['categoryId']))}
-        >
-          <option value="">Select a category</option>
-          {filteredCategories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
+        <div style={{ position: 'relative' }}>
+          <input
+            id="entry-category"
+            type="text"
+            value={categorySearch}
+            onChange={(e) => {
+              setCategorySearch(e.target.value);
+              setShowSuggestions(true);
+              // Clear categoryId when user edits — they need to pick or confirm
+              set('categoryId', '');
+            }}
+            onFocus={() => setShowSuggestions(true)}
+            onBlur={() => {
+              // Delay hiding so click on suggestion registers
+              setTimeout(() => setShowSuggestions(false), 200);
+              setTouched((p) => ({ ...p, categoryId: true }));
+            }}
+            placeholder="Type a category name…"
+            autoComplete="off"
+            role="combobox"
+            aria-expanded={showSuggestions && suggestions.length > 0}
+            aria-controls="category-suggestions"
+            aria-describedby={errors['categoryId'] ? 'entry-category-error' : undefined}
+            aria-invalid={touched['categoryId'] && !!errors['categoryId']}
+            style={inputStyle(!!(touched['categoryId'] && errors['categoryId']))}
+          />
+          {showSuggestions && suggestions.length > 0 && (
+            <ul
+              id="category-suggestions"
+              role="listbox"
+              aria-label="Category suggestions"
+              style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                margin: 0,
+                padding: 0,
+                listStyle: 'none',
+                background: '#FFFFFF',
+                border: '1px solid #D6D3D1',
+                borderRadius: 8,
+                maxHeight: 160,
+                overflowY: 'auto',
+                zIndex: 10,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+              }}
+            >
+              {suggestions.map((cat) => (
+                <li
+                  key={cat.id}
+                  role="option"
+                  aria-selected={values.categoryId === cat.id}
+                  onMouseDown={() => {
+                    set('categoryId', cat.id);
+                    setCategorySearch(cat.name);
+                    setShowSuggestions(false);
+                  }}
+                  style={{
+                    padding: '8px 12px',
+                    fontSize: 14,
+                    color: '#1C1917',
+                    cursor: 'pointer',
+                    background: values.categoryId === cat.id ? '#F5F5F4' : 'transparent',
+                  }}
+                >
+                  {cat.name}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </FormField>
 
       {/* Currency */}

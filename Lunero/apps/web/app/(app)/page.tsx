@@ -15,6 +15,7 @@ import { EntryModal } from '../../components/dashboard/entry-modal';
 import { DeleteConfirmDialog } from '../../components/dashboard/delete-confirm-dialog';
 import { EntryList } from '../../components/dashboard/entry-list';
 import { RecurringSuggestionBanner } from '../../components/dashboard/recurring-suggestion-banner';
+import { SUPPORTED_CURRENCIES } from '../../components/onboarding/step-currency';
 
 type ModalState =
   | { type: 'closed' }
@@ -236,6 +237,7 @@ export default function DashboardPage() {
           mode="create"
           categories={categories}
           defaultCurrency={defaultCurrency}
+          supportedCurrencies={SUPPORTED_CURRENCIES}
           onSubmit={handleCreate}
           onClose={() => setModal({ type: 'closed' })}
           isSubmitting={createEntry.isPending}
@@ -248,6 +250,7 @@ export default function DashboardPage() {
           entry={modal.entry}
           categories={categories}
           defaultCurrency={defaultCurrency}
+          supportedCurrencies={SUPPORTED_CURRENCIES}
           onSubmit={handleEdit}
           onClose={() => setModal({ type: 'closed' })}
           isSubmitting={updateEntry.isPending}

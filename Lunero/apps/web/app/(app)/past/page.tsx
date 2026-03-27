@@ -23,6 +23,9 @@ export default function PastFlowSheetsPage() {
     .filter((s) => s.status === 'archived')
     .sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime());
 
+  // Prevent creating a new FlowSheet when one is already active
+  const hasActiveSheet = allSheets.some((s) => s.status === 'active');
+
   // Most recent past sheet — used to carry over projections
   const mostRecentPastSheet = pastSheets[0];
   const { data: carriedProjections = [] } = useProjections(mostRecentPastSheet?.id ?? '');
@@ -61,14 +64,16 @@ export default function PastFlowSheetsPage() {
       <h1 className="past-heading">Past FlowSheets</h1>
 
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <button
-          type="button"
-          onClick={() => setShowCreate(true)}
-          aria-label="Create new FlowSheet"
-          className="past-create-btn"
-        >
-          + New FlowSheet
-        </button>
+        {!hasActiveSheet && (
+          <button
+            type="button"
+            onClick={() => setShowCreate(true)}
+            aria-label="Create new FlowSheet"
+            className="past-create-btn"
+          >
+            + New FlowSheet
+          </button>
+        )}
       </div>
 
       {pastSheets.length === 0 ? (
