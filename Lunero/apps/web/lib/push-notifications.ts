@@ -88,7 +88,10 @@ export async function subscribeToPush(): Promise<boolean> {
       existing ??
       (await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidKey),
+        // Cast required: pushManager.subscribe expects BufferSource but
+        // urlBase64ToUint8Array returns Uint8Array, which satisfies the
+        // runtime contract yet doesn't match the stricter TS lib typings.
+        applicationServerKey: urlBase64ToUint8Array(vapidKey) as BufferSource,
       }));
 
     await notificationApi.registerToken({
