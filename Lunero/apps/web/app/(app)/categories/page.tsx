@@ -19,17 +19,19 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 // Human-readable labels rendered in each CategoryGroup header
-export const TYPE_LABELS: Record<string, string> = {
+const TYPE_LABELS: Record<string, string> = {
   income: 'Income',
   expense: 'Expense',
   savings: 'Savings',
 };
 
 // Fixed display order matches the product's entry type hierarchy
-export const ENTRY_TYPES = ['income', 'expense', 'savings'] as const;
+const ENTRY_TYPES = ['income', 'expense', 'savings'] as const;
 
 // Discriminated union keeps modal state self-contained — the 'delete' variant
-// carries the target category so the dialog doesn't need a separate state variable
+// carries the target category so the dialog doesn't need a separate state variable.
+// Using a union instead of separate boolean flags prevents impossible states
+// (e.g. both create and delete modals open simultaneously).
 type ModalState =
   | { type: 'closed' }
   | { type: 'create' }
@@ -41,18 +43,21 @@ export default function CategoriesPage() {
   const createCategory = useCreateCategory();
   const { data: flowSheet } = useActiveFlowSheet();
   const { data: profile } = useProfile();
+  // Projections require an active FlowSheet; fall back to empty array when none exists
   const { data: projections = [] } = useProjections(flowSheet?.id ?? '');
 
-  // Build a categoryId → projection map so CategoryGroup rows can look up
-  // spending/income projections in O(1) instead of scanning the array each time.
+  // Index projections by categoryId for O(1) lookups in CategoryGroup rows.
+  // Each projection holds the aggregated spending/income total for one category
+  // within the active FlowSheet, so rows can display amounts without re-scanning.
   const projectionsByCategory = projections.reduce<Record<string, CategoryProjection>>(
     (acc, p) => { acc[p.categoryId] = p; return acc; },
     {},
   );
 
   // Group categories by entry type (income / expense / savings).
-  // Within each group: primary sort by user-defined sortOrder, secondary sort
-  // by locale-aware name comparison as a tiebreaker for equal sortOrder values.
+  // Sorting: primary by user-defined sortOrder, then locale-aware name comparison
+  // as a stable tiebreaker when two categories share the same sortOrder value.
+  // sortByLocale wraps Intl.Collator so names sort correctly for the user's locale.
   const grouped = ENTRY_TYPES.reduce<Record<string, Category[]>>((acc, type) => {
     acc[type] = sortByLocale(
       categories.filter((c) => c.entryType === type).sort((a, b) => a.sortOrder - b.sortOrder),
@@ -118,6 +123,9 @@ export default function CategoriesPage() {
         />
       )}
 
+      {/* Delete flow: if the category still has linked entries the user must
+          reassign them to another category or discard them first. This prevents
+          orphaned entries that would break FlowSheet balance calculations. */}
       {modal.type === 'delete' && (
         <ReassignOrDiscardDialog
           category={modal.category}
