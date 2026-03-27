@@ -24,14 +24,17 @@ export interface EntryFormProps {
   isSubmitting?: boolean;
 }
 
+/** Lunero's three entry types, used to render the type selector radio group. */
 const ENTRY_TYPES: { value: EntryType; label: string }[] = [
   { value: 'income', label: 'Income' },
   { value: 'expense', label: 'Expense' },
   { value: 'savings', label: 'Savings' },
 ];
 
+/** Fallback currency list when the backend-provided list is unavailable. */
 const DEFAULT_CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'INR', 'BRL'];
 
+/** Returns today's date as an ISO string (YYYY-MM-DD) for the date input default. */
 function todayIso(): string {
   return new Date().toISOString().split('T')[0] ?? '';
 }
@@ -57,6 +60,7 @@ export function EntryForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
+  // Only show categories matching the selected entry type (income/expense/savings)
   const filteredCategories = categories.filter((c) => c.entryType === values.entryType);
 
   const set = useCallback(<K extends keyof EntryFormValues>(key: K, value: EntryFormValues[K]) => {
@@ -77,7 +81,7 @@ export function EntryForm({
   }, [values]);
 
   const handleSubmit = useCallback(async () => {
-    // Mark all fields touched on submit attempt
+    // Force-touch all fields so validation errors surface even for untouched inputs
     setTouched({ entryType: true, categoryId: true, amount: true, currency: true, entryDate: true });
     if (!validate()) return;
     await onSubmit(values);
