@@ -18,7 +18,8 @@ export const flowSheetApi = {
   },
 
   getAll(): Promise<FlowSheet[]> {
-    return apiClient.get<FlowSheet[]>('/api/v1/flowsheets').then((r) => r.data);
+    // Backend returns a Spring Page wrapper — extract the content array
+    return apiClient.get<{ content: FlowSheet[] }>('/api/v1/flowsheets').then((r) => r.data.content);
   },
 
   getById(id: string): Promise<FlowSheet> {
