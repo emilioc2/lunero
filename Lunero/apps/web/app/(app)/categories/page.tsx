@@ -18,6 +18,7 @@ const TYPE_COLORS: Record<string, string> = {
   savings: '#C4A484',
 };
 
+// Human-readable labels rendered in each CategoryGroup header
 export const TYPE_LABELS: Record<string, string> = {
   income: 'Income',
   expense: 'Expense',
@@ -42,14 +43,16 @@ export default function CategoriesPage() {
   const { data: profile } = useProfile();
   const { data: projections = [] } = useProjections(flowSheet?.id ?? '');
 
-  // Index projections by categoryId for O(1) lookup in each row
+  // Build a categoryId → projection map so CategoryGroup rows can look up
+  // spending/income projections in O(1) instead of scanning the array each time.
   const projectionsByCategory = projections.reduce<Record<string, CategoryProjection>>(
     (acc, p) => { acc[p.categoryId] = p; return acc; },
     {},
   );
 
-  // Group categories by entry type; within each group sort by sortOrder first,
-  // then locale-aware by name as a tiebreaker (Requirement 15.4)
+  // Group categories by entry type (income / expense / savings).
+  // Within each group: primary sort by user-defined sortOrder, secondary sort
+  // by locale-aware name comparison as a tiebreaker for equal sortOrder values.
   const grouped = ENTRY_TYPES.reduce<Record<string, Category[]>>((acc, type) => {
     acc[type] = sortByLocale(
       categories.filter((c) => c.entryType === type).sort((a, b) => a.sortOrder - b.sortOrder),
