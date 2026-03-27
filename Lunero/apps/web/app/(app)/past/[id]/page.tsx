@@ -17,6 +17,7 @@ import { DeleteConfirmDialog } from '../../../../components/dashboard/delete-con
 import { useQueryClient } from '@tanstack/react-query';
 import { formatPeriodLabel } from '../../../../lib/locale-utils';
 
+/** Discriminated union for the single-modal pattern — only one dialog can be open at a time. */
 type ModalState =
   | { type: 'closed' }
   | { type: 'edit'; entry: Entry }
@@ -36,6 +37,7 @@ export default function PastFlowSheetDetailPage() {
   const { data: categories = [] } = useCategories();
   const { data: profile } = useProfile();
 
+  // Local (optimistic) store — falls back to server entries if no local edits exist yet.
   const { entriesBySheet, updateEntry: updateStoreEntry, removeEntry, addEntry } = useEntryStore();
   const storeEntries: Entry[] = entriesBySheet[id] ?? serverEntries;
 
@@ -44,6 +46,7 @@ export default function PastFlowSheetDetailPage() {
   const deleteEntry = useDeleteEntry(id);
 
   const defaultCurrency = profile?.defaultCurrency ?? 'USD';
+  // Past FlowSheets are locked by default; users must explicitly unlock to edit.
   const isUnlocked = flowSheet ? !flowSheet.editLocked : false;
 
   // ── Unlock ─────────────────────────────────────────────────────────────────
@@ -60,6 +63,10 @@ export default function PastFlowSheetDetailPage() {
 
   // ── Edit entry ─────────────────────────────────────────────────────────────
 
+  /**
+   * Optimistic edit: apply changes to the local store immediately, then
+   * persist to the server. On failure, roll back to the original entry.
+   */
   const handleEdit = useCallback(
     async (values: EntryFormValues) => {
       if (modal.type !== 'edit') return;
@@ -73,14 +80,17 @@ export default function PastFlowSheetDetailPage() {
         clientUpdatedAt: new Date().toISOString(),
       };
 
+      // Optimistic update — show changes instantly.
       updateStoreEntry({ ...entry, ...dto, amount: dto.amount });
       setModal({ type: 'closed' });
 
       try {
         const updated = await updateEntry.mutateAsync({ id: entry.id, data: dto });
+        // Replace optimistic data with the server-confirmed version.
         updateStoreEntry(updated);
         qc.invalidateQueries({ queryKey: flowSheetKeys.detail(id) });
       } catch {
+        // Rollback to the original entry on failure.
         updateStoreEntry(entry);
       }
     },
@@ -89,6 +99,7 @@ export default function PastFlowSheetDetailPage() {
 
   // ── Delete entry ───────────────────────────────────────────────────────────
 
+  /** Optimistic delete: remove from local store first, re-add on server failure. */
   const handleDelete = useCallback(async () => {
     if (modal.type !== 'delete') return;
     const entry = modal.entry;
@@ -100,6 +111,7 @@ export default function PastFlowSheetDetailPage() {
       await deleteEntry.mutateAsync(entry.id);
       qc.invalidateQueries({ queryKey: flowSheetKeys.detail(id) });
     } catch {
+      // Restore the entry if the server rejects the delete.
       addEntry(entry);
     }
   }, [modal, id, removeEntry, addEntry, deleteEntry, qc]);
@@ -270,6 +282,7 @@ interface ReadOnlyEntryListProps {
 }
 
 function ReadOnlyEntryList({ entries, categories, defaultCurrency }: ReadOnlyEntryListProps) {
+  // Soft-deleted entries are kept in the store for undo support but hidden from the UI.
   const visible = entries.filter((e) => !e.isDeleted);
 
   if (visible.length === 0) {
@@ -321,6 +334,7 @@ function UnlockConfirmDialog({ periodLabel, isUnlocking, error, onConfirm, onCan
       aria-modal="true"
       aria-label="Unlock FlowSheet"
       className="ul-overlay"
+      // Close on backdrop click — ignore clicks that bubble up from the panel.
       onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
     >
       <div className="ul-panel">
