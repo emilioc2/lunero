@@ -4,7 +4,7 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "build": "tsc --project tsconfig.json",
+    "build": "echo 'Transpiled by Next.js via transpilePackages'",
     "lint": "eslint src/",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
