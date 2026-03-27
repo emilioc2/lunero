@@ -10,10 +10,10 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@clerk/nextjs": "^5.2.4",
+    "@lunero/api-client": "*",
     "@lunero/core": "*",
     "@lunero/ui": "*",
-    "@lunero/api-client": "*",
-    "@clerk/nextjs": "^5.2.4",
     "@tamagui/core": "^1.110.0",
     "@tamagui/next-plugin": "^1.110.0",
     "@tanstack/react-query": "^5.51.1",
@@ -26,6 +26,8 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "fast-check": "^4.6.0",
+    "jsdom": "^29.0.1",
     "typescript": "^5",
     "vitest": "^1.6.0"
   }
