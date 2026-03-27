@@ -1,0 +1,49 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:lunero_integration_test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  main:
+    allow-bean-definition-overriding: true
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  flyway:
+    enabled: false
+
+  cache:
+    type: none
+
+  autoconfigure:
+    exclude:
+      - org.springframework.ai.model.vertexai.autoconfigure.gemini.VertexAiGeminiChatAutoConfiguration
+      - org.springframework.ai.model.vertexai.autoconfigure.gemini.VertexAiGeminiEmbeddingAutoConfiguration
+
+  ai:
+    google:
+      genai:
+        api-key: test-key
+        chat:
+          options:
+            model: gemini-1.5-flash
+
+clerk:
+  jwks-uri: https://test.clerk.invalid/.well-known/jwks.json
+
+vapid:
+  public-key: BNbxSBSBHFPHMkFJMFJMFJMFJMFJMFJMFJMFJMFJMFJMFJMFJMFJMFJMFJMFJMFJMFJMFJMFJMFJMFJMFJM=
+  private-key: test-private-key
+  subject: mailto:test@test.com
+
+logging:
+  level:
+    root: WARN
+    com.lunero: DEBUG
