@@ -19,6 +19,11 @@ spring:
     type: caffeine
 
   ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: ${VERTEX_AI_PROJECT_ID:lunero-default}
+          location: ${VERTEX_AI_LOCATION:us-central1}
     google:
       genai:
         api-key: ${GEMINI_API_KEY}
