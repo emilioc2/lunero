@@ -34834,7 +34834,7 @@ var require_Text = __commonJS({
       x: 0,
       y: 0
     };
-    var Text20 = exports2.Text = /* @__PURE__ */ (0, _react.forwardRef)((outsideProps, ref) => {
+    var Text19 = exports2.Text = /* @__PURE__ */ (0, _react.forwardRef)((outsideProps, ref) => {
       var _resolveDefaultProps = (0, _resolveDefaultProps2.resolveDefaultProps)(outsideProps, textDefaultProps), {
         x: propsX,
         y: propsY,
@@ -34916,7 +34916,7 @@ var require_Text = __commonJS({
         );
       }));
     });
-    Text20.displayName = "Text";
+    Text19.displayName = "Text";
   }
 });
 
@@ -58100,18 +58100,7 @@ function EntryForm({
   });
   const [errors2, setErrors] = (0, import_react.useState)({});
   const [touched, setTouched] = (0, import_react.useState)({});
-  const [categorySearch, setCategorySearch] = (0, import_react.useState)(() => {
-    if (initialValues?.categoryId) {
-      const match = categories.find((c) => c.id === initialValues.categoryId);
-      return match?.name ?? "";
-    }
-    return "";
-  });
-  const [showSuggestions, setShowSuggestions] = (0, import_react.useState)(false);
   const filteredCategories = categories.filter((c) => c.entryType === values.entryType);
-  const suggestions = categorySearch.trim() ? filteredCategories.filter(
-    (c) => c.name.toLowerCase().includes(categorySearch.toLowerCase())
-  ) : filteredCategories;
   const set2 = (0, import_react.useCallback)((key, value) => {
     setValues((prev) => ({ ...prev, [key]: value }));
     setTouched((prev) => ({ ...prev, [key]: true }));
@@ -58135,8 +58124,6 @@ function EntryForm({
   const handleEntryTypeChange = (0, import_react.useCallback)((type) => {
     setValues((prev) => ({ ...prev, entryType: type, categoryId: "" }));
     setTouched((prev) => ({ ...prev, entryType: true, categoryId: false }));
-    setCategorySearch("");
-    setShowSuggestions(false);
   }, []);
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(
     YStack,
@@ -58201,79 +58188,20 @@ function EntryForm({
             label: "Category",
             htmlFor: "entry-category",
             error: touched["categoryId"] ? errors2["categoryId"] : void 0,
-            children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { position: "relative" }, children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
-                "input",
-                {
-                  id: "entry-category",
-                  type: "text",
-                  value: categorySearch,
-                  onChange: (e) => {
-                    setCategorySearch(e.target.value);
-                    setShowSuggestions(true);
-                    set2("categoryId", "");
-                  },
-                  onFocus: () => setShowSuggestions(true),
-                  onBlur: () => {
-                    setTimeout(() => setShowSuggestions(false), 200);
-                    setTouched((p) => ({ ...p, categoryId: true }));
-                  },
-                  placeholder: "Type a category name\u2026",
-                  autoComplete: "off",
-                  role: "combobox",
-                  "aria-expanded": showSuggestions && suggestions.length > 0,
-                  "aria-controls": "category-suggestions",
-                  "aria-describedby": errors2["categoryId"] ? "entry-category-error" : void 0,
-                  "aria-invalid": touched["categoryId"] && !!errors2["categoryId"],
-                  style: inputStyle(!!(touched["categoryId"] && errors2["categoryId"]))
-                }
-              ),
-              showSuggestions && suggestions.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
-                "ul",
-                {
-                  id: "category-suggestions",
-                  role: "listbox",
-                  "aria-label": "Category suggestions",
-                  style: {
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    right: 0,
-                    margin: 0,
-                    padding: 0,
-                    listStyle: "none",
-                    background: "#FFFFFF",
-                    border: "1px solid #D6D3D1",
-                    borderRadius: 8,
-                    maxHeight: 160,
-                    overflowY: "auto",
-                    zIndex: 10,
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
-                  },
-                  children: suggestions.map((cat) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
-                    "li",
-                    {
-                      role: "option",
-                      "aria-selected": values.categoryId === cat.id,
-                      onMouseDown: () => {
-                        set2("categoryId", cat.id);
-                        setCategorySearch(cat.name);
-                        setShowSuggestions(false);
-                      },
-                      style: {
-                        padding: "8px 12px",
-                        fontSize: 14,
-                        color: "#1C1917",
-                        cursor: "pointer",
-                        background: values.categoryId === cat.id ? "#F5F5F4" : "transparent"
-                      },
-                      children: cat.name
-                    },
-                    cat.id
-                  ))
-                }
-              )
-            ] })
+            children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
+              "input",
+              {
+                id: "entry-category",
+                type: "text",
+                value: values.categoryId,
+                onChange: (e) => set2("categoryId", e.target.value),
+                onBlur: () => setTouched((p) => ({ ...p, categoryId: true })),
+                placeholder: "e.g. Groceries, Salary, Rent\u2026",
+                "aria-describedby": errors2["categoryId"] ? "entry-category-error" : void 0,
+                "aria-invalid": touched["categoryId"] && !!errors2["categoryId"],
+                style: inputStyle(!!(touched["categoryId"] && errors2["categoryId"]))
+              }
+            )
           }
         ),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(FormField, { label: "Currency", htmlFor: "entry-currency", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
@@ -58543,19 +58471,31 @@ function EntryRowInner({
       focusStyle: interactive ? { backgroundColor: "$backgroundFocus" } : void 0,
       children: [
         /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(YStack, { gap: "$1", flex: 1, minWidth: 0, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(CategoryChip, { name: categoryName, entryType }),
-          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_core7.Text, { fontSize: 12, color: "$placeholderColor", "aria-hidden": true, children: formatDate(entryDate) }),
-          note ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
-            import_core7.Text,
-            {
-              fontSize: 12,
-              color: "$colorHover",
-              numberOfLines: 1,
-              ellipsizeMode: "tail",
-              "aria-hidden": true,
-              children: note
-            }
-          ) : null
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(XStack, { alignItems: "center", gap: 8, children: [
+            note ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+              import_core7.Text,
+              {
+                fontSize: 14,
+                fontWeight: "500",
+                color: "$color",
+                numberOfLines: 1,
+                ellipsizeMode: "tail",
+                "aria-hidden": true,
+                children: note
+              }
+            ) : null,
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+              import_core7.Text,
+              {
+                fontSize: 12,
+                fontWeight: "500",
+                color: entryType === "income" ? COLOR.positiveGreen : entryType === "expense" ? COLOR.expenseClayRed : COLOR.savingsWarmEarth,
+                "aria-hidden": true,
+                children: categoryName
+              }
+            )
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_core7.Text, { fontSize: 12, color: "$placeholderColor", "aria-hidden": true, children: formatDate(entryDate) })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(YStack, { alignItems: "flex-end", gap: "$1", children: [
           /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
@@ -58619,10 +58559,12 @@ function TransactionRow({
   entryType,
   categoryName,
   entryDate,
-  onDelete
+  onDelete,
+  index = 0
 }) {
   const prefix = entryType === "income" ? "+" : "\u2212";
-  const amountColor = entryType === "income" ? COLOR.incomeOliveGray : entryType === "expense" ? COLOR.expenseClayRed : COLOR.savingsWarmEarth;
+  const amountColor = entryType === "income" ? COLOR.positiveGreen : entryType === "expense" ? COLOR.expenseClayRed : COLOR.savingsWarmEarth;
+  const circleColor = dotColor(entryType);
   const typeLabel = entryType === "income" ? "Income" : entryType === "expense" ? "Expense" : "Savings";
   const ariaLabel = `${typeLabel}: ${prefix}${formatAmount3(amount, currency)}, ${note}, category ${categoryName}, ${formatDate2(entryDate)}`;
   const handleDeleteClick = /* @__PURE__ */ __name((e) => {
@@ -58639,54 +58581,75 @@ function TransactionRow({
     XStack,
     {
       alignItems: "center",
-      paddingVertical: "$3",
-      paddingHorizontal: "$4",
-      borderBottomWidth: 1,
-      borderBottomColor: "$borderColor",
-      gap: "$3",
+      padding: 16,
+      gap: 14,
       role: "listitem",
       "aria-label": ariaLabel,
+      className: "transaction-row",
+      backgroundColor: "$surface1",
+      borderWidth: 1,
+      borderColor: "$borderColor",
+      borderRadius: 12,
+      style: {
+        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+        transition: "transform 0.15s ease, box-shadow 0.15s ease"
+      },
+      hoverStyle: { scale: 1.005, backgroundColor: "$backgroundHover" },
       children: [
         /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
           XStack,
           {
-            width: 10,
-            height: 10,
-            borderRadius: "$full",
-            backgroundColor: dotColor(entryType),
-            flexShrink: 0,
-            "aria-hidden": "true"
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-          import_core8.Text,
-          {
-            fontSize: 14,
-            fontWeight: "400",
-            color: "$color",
-            flex: 1,
-            numberOfLines: 1,
-            ellipsizeMode: "tail",
-            "aria-hidden": "true",
-            children: note
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(CategoryChip, { name: categoryName, entryType }),
-        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-          import_core8.Text,
-          {
-            fontSize: 12,
-            color: "$placeholderColor",
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: `${circleColor}18`,
+            alignItems: "center",
+            justifyContent: "center",
             flexShrink: 0,
             "aria-hidden": "true",
-            children: formatDate2(entryDate)
+            children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+              XStack,
+              {
+                width: 12,
+                height: 12,
+                borderRadius: 6,
+                backgroundColor: circleColor
+              }
+            )
           }
         ),
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(YStack, { flex: 1, gap: 2, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(XStack, { alignItems: "center", gap: 8, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+              import_core8.Text,
+              {
+                fontSize: 14,
+                fontWeight: "500",
+                color: "$color",
+                numberOfLines: 1,
+                ellipsizeMode: "tail",
+                "aria-hidden": "true",
+                children: note
+              }
+            ),
+            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+              import_core8.Text,
+              {
+                fontSize: 12,
+                fontWeight: "500",
+                color: amountColor,
+                "aria-hidden": "true",
+                children: categoryName
+              }
+            )
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core8.Text, { fontSize: 12, color: "$placeholderColor", "aria-hidden": "true", children: formatDate2(entryDate) })
+        ] }),
         /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
           import_core8.Text,
           {
-            fontSize: 14,
-            fontWeight: "500",
+            fontSize: 15,
+            fontWeight: "600",
             color: amountColor,
             flexShrink: 0,
             "aria-hidden": "true",
@@ -58704,17 +58667,15 @@ function TransactionRow({
             "aria-label": `Delete ${note}`,
             onClick: handleDeleteClick,
             onKeyDown: handleDeleteKeyDown,
-            style: { cursor: "pointer", display: "flex", alignItems: "center" },
-            children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-              import_core8.Text,
-              {
-                fontSize: 14,
-                color: "$placeholderColor",
-                hoverStyle: { color: COLOR.expenseClayRed },
-                "aria-hidden": "true",
-                children: "\u{1F5D1}"
-              }
-            )
+            className: "transaction-delete-btn",
+            style: {
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              opacity: 0.4,
+              transition: "opacity 0.15s ease"
+            },
+            children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core8.Text, { fontSize: 18, fontWeight: "700", color: "$placeholderColor", "aria-hidden": "true", children: "\u22EE" })
           }
         ) : null
       ]
@@ -58765,6 +58726,7 @@ function RecentTransactionsList({ entries, currency }) {
       borderRadius: 12,
       padding: 20,
       gap: "$3",
+      style: { boxShadow: "0 1px 3px rgba(0,0,0,0.06)" },
       children: [
         /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
           import_core9.Text,
@@ -58775,51 +58737,78 @@ function RecentTransactionsList({ entries, currency }) {
             children: "Recent Transactions"
           }
         ),
-        recent.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core9.Text, { fontSize: 14, color: "$placeholderColor", children: "No transactions yet." }) : /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(YStack, { role: "list", gap: 0, children: recent.map((entry) => {
+        recent.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core9.Text, { fontSize: 14, color: "$placeholderColor", children: "No transactions yet." }) : /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(YStack, { role: "list", gap: 10, children: recent.map((entry) => {
           const prefix = entry.entryType === "income" ? "+" : "\u2212";
-          const amountColor = entry.entryType === "income" ? COLOR.incomeOliveGray : entry.entryType === "expense" ? COLOR.expenseClayRed : COLOR.savingsWarmEarth;
+          const amountColor = entry.entryType === "income" ? COLOR.positiveGreen : entry.entryType === "expense" ? COLOR.expenseClayRed : COLOR.savingsWarmEarth;
+          const circleColor = dotColor2(entry.entryType);
           return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
             XStack,
             {
               alignItems: "center",
-              paddingVertical: "$3",
-              gap: "$3",
-              borderBottomWidth: 1,
-              borderBottomColor: "$borderColor",
+              padding: 14,
+              gap: 12,
               role: "listitem",
               "aria-label": `${entry.note}, ${prefix}${formatAmount4(entry.amount, currency)}`,
+              backgroundColor: "$surface1",
+              borderWidth: 1,
+              borderColor: "$borderColor",
+              borderRadius: 10,
+              style: { boxShadow: "0 1px 2px rgba(0,0,0,0.03)" },
               children: [
                 /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
                   XStack,
                   {
-                    width: 8,
-                    height: 8,
-                    borderRadius: "$full",
-                    backgroundColor: dotColor2(entry.entryType),
+                    width: 36,
+                    height: 36,
+                    borderRadius: 18,
+                    backgroundColor: `${circleColor}18`,
+                    alignItems: "center",
+                    justifyContent: "center",
                     flexShrink: 0,
-                    "aria-hidden": "true"
-                  }
-                ),
-                /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
-                  import_core9.Text,
-                  {
-                    fontSize: 14,
-                    fontWeight: "400",
-                    color: "$color",
-                    flex: 1,
-                    numberOfLines: 1,
-                    ellipsizeMode: "tail",
                     "aria-hidden": "true",
-                    children: entry.note
+                    children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+                      XStack,
+                      {
+                        width: 10,
+                        height: 10,
+                        borderRadius: 5,
+                        backgroundColor: circleColor
+                      }
+                    )
                   }
                 ),
-                /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(CategoryChip, { name: entry.categoryName, entryType: entry.entryType }),
-                /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core9.Text, { fontSize: 12, color: "$placeholderColor", flexShrink: 0, "aria-hidden": "true", children: formatDate3(entry.entryDate) }),
+                /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(YStack, { flex: 1, gap: 2, children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(XStack, { alignItems: "center", gap: 8, children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+                      import_core9.Text,
+                      {
+                        fontSize: 14,
+                        fontWeight: "500",
+                        color: "$color",
+                        numberOfLines: 1,
+                        ellipsizeMode: "tail",
+                        "aria-hidden": "true",
+                        children: entry.note
+                      }
+                    ),
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+                      import_core9.Text,
+                      {
+                        fontSize: 12,
+                        fontWeight: "500",
+                        color: amountColor,
+                        "aria-hidden": "true",
+                        children: entry.categoryName
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core9.Text, { fontSize: 12, color: "$placeholderColor", "aria-hidden": "true", children: formatDate3(entry.entryDate) })
+                ] }),
                 /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
                   import_core9.Text,
                   {
-                    fontSize: 14,
-                    fontWeight: "500",
+                    fontSize: 15,
+                    fontWeight: "600",
                     color: amountColor,
                     flexShrink: 0,
                     "aria-hidden": "true",
@@ -58932,6 +58921,11 @@ function ActiveFlowSheetCard({
       borderRadius: 12,
       padding: 24,
       gap: "$4",
+      style: {
+        boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+        transition: "transform 0.15s ease, box-shadow 0.15s ease"
+      },
+      hoverStyle: { scale: 1.01 },
       role: "region",
       "aria-label": `Active FlowSheet: ${name}`,
       children: [
@@ -60533,6 +60527,7 @@ function MonthlyOverviewChart({ periods, currency }) {
       borderRadius: 12,
       padding: 24,
       gap: "$4",
+      style: { boxShadow: "0 1px 3px rgba(0,0,0,0.06)" },
       children: [
         /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
           import_core15.Text,
@@ -61035,6 +61030,11 @@ function SummaryCard({ label, amount, currency, subtitle, icon }) {
       gap: "$1",
       role: "region",
       "aria-label": `${label}: ${formatAmount9(amount, currency)}${subtitle ? `, ${subtitle}` : ""}`,
+      style: {
+        boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+        transition: "transform 0.15s ease, box-shadow 0.15s ease"
+      },
+      hoverStyle: { scale: 1.02 },
       children: [
         /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)(XStack, { justifyContent: "space-between", alignItems: "flex-start", children: [
           /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(
@@ -61113,10 +61113,15 @@ function TopTabBar({ activePath, onNavigate, onAddNew }) {
         borderBottomWidth: 1,
         borderBottomColor: "$borderColor",
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)(XStack, { alignItems: "baseline", gap: "$2", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(import_core21.Text, { fontSize: 18, fontWeight: "600", color: "$color", letterSpacing: -0.3, children: "\u{1F319} lunero" }),
-            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(import_core21.Text, { fontSize: 12, color: "$placeholderColor", children: "Smart Budget Management" })
-          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(
+            "img",
+            {
+              src: "/logo.png",
+              alt: "Lunero",
+              height: 160,
+              style: { display: "block" }
+            }
+          ),
           /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(
             import_core21.Text,
             {
@@ -61176,8 +61181,8 @@ function TopTabBar({ activePath, onNavigate, onAddNew }) {
                         cursor: "pointer",
                         borderWidth: 0,
                         backgroundColor: "transparent",
-                        borderBottomWidth: 2,
-                        borderBottomColor: active ? "$color" : "transparent",
+                        borderBottomWidth: 3,
+                        borderBottomColor: active ? COLOR.expenseClayRed : "transparent",
                         hoverStyle: { backgroundColor: "$backgroundHover" },
                         children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(
                           import_core21.Text,
@@ -61204,7 +61209,7 @@ function TopTabBar({ activePath, onNavigate, onAddNew }) {
               role: "button",
               "aria-label": "Add new entry",
               onPress: onAddNew,
-              backgroundColor: "$expense",
+              backgroundColor: COLOR.expenseClayRed,
               paddingHorizontal: 14,
               paddingVertical: 8,
               borderRadius: 8,
@@ -61214,7 +61219,7 @@ function TopTabBar({ activePath, onNavigate, onAddNew }) {
               alignItems: "center",
               gap: "$1",
               style: { flexShrink: 0, whiteSpace: "nowrap" },
-              children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(import_core21.Text, { fontSize: 14, fontWeight: "500", color: "white", children: "+ Add New" })
+              children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(import_core21.Text, { fontSize: 14, fontWeight: "500", color: COLOR.white, children: "+ Add New" })
             }
           )
         ]
@@ -61279,7 +61284,8 @@ function MiraPopup({
         overflow: "hidden",
         style: {
           boxShadow: "0 8px 32px rgba(28, 25, 23, 0.18)",
-          zIndex: 9999
+          zIndex: 9999,
+          position: "fixed"
         },
         role: "dialog",
         "aria-label": "Mira AI budgeting coach",
@@ -61305,7 +61311,8 @@ function MiraPopup({
         boxShadow: "0 8px 32px rgba(28, 25, 23, 0.18)",
         zIndex: 9999,
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
+        position: "fixed"
       },
       role: "dialog",
       "aria-label": "Mira AI budgeting coach",
@@ -61531,7 +61538,6 @@ function TypingIndicator2() {
 __name(TypingIndicator2, "TypingIndicator");
 
 // ../../packages/ui/src/mira-fab.tsx
-var import_core23 = require("@tamagui/core");
 var import_jsx_runtime23 = require("react/jsx-runtime");
 function MiraFAB({ isPopupOpen, onPress }) {
   if (isPopupOpen) return null;
@@ -61560,10 +61566,21 @@ function MiraFAB({ isPopupOpen, onPress }) {
       },
       style: {
         boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-        zIndex: 9998
+        zIndex: 9998,
+        overflow: "hidden",
+        position: "fixed"
       },
       hoverStyle: { backgroundColor: COLOR.stone800 },
-      children: /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(import_core23.Text, { fontSize: 24, fontWeight: "700", color: COLOR.white, "aria-hidden": "true", children: "?" })
+      children: /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(
+        "img",
+        {
+          src: "/mira.png",
+          alt: "Mira AI coach",
+          width: 56,
+          height: 56,
+          style: { display: "block", objectFit: "cover" }
+        }
+      )
     }
   );
 }

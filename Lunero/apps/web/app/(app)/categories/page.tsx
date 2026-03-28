@@ -50,7 +50,7 @@ export default function CategoriesPage() {
   // Each projection holds the aggregated spending/income total for one category
   // within the active FlowSheet, so rows can display amounts without re-scanning.
   const projectionsByCategory = projections.reduce<Record<string, CategoryProjection>>(
-    (acc, p) => { acc[p.categoryId] = p; return acc; },
+    (acc: Record<string, CategoryProjection>, p: CategoryProjection) => { acc[p.categoryId] = p; return acc; },
     {},
   );
 

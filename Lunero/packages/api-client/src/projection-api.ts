@@ -13,15 +13,21 @@ export const projectionApi = {
       .then((r) => r.data);
   },
 
+  getProjectionSummary(flowSheetId: string): Promise<ProjectionSummary> {
+    return apiClient
+      .get<ProjectionSummary>(`/api/v1/flowsheets/${flowSheetId}/projections/summary`)
+      .then((r) => r.data);
+  },
+
   upsertProjection(
     flowSheetId: string,
     categoryId: string,
-    data: UpsertProjectionDto
+    data: UpsertProjectionDto,
   ): Promise<CategoryProjection> {
     return apiClient
       .put<CategoryProjection>(
         `/api/v1/flowsheets/${flowSheetId}/projections/${categoryId}`,
-        data
+        data,
       )
       .then((r) => r.data);
   },
@@ -30,11 +36,5 @@ export const projectionApi = {
     return apiClient
       .delete(`/api/v1/flowsheets/${flowSheetId}/projections/${categoryId}`)
       .then(() => undefined);
-  },
-
-  getProjectionSummary(flowSheetId: string): Promise<ProjectionSummary> {
-    return apiClient
-      .get<ProjectionSummary>(`/api/v1/flowsheets/${flowSheetId}/projections/summary`)
-      .then((r) => r.data);
   },
 };

@@ -4,8 +4,13 @@
     "jsx": "react-jsx",
     "outDir": "dist",
     "rootDir": "src",
-    "noImplicitReturns": false
+    "noImplicitReturns": false,
+    "paths": {
+      "@lunero/core": ["../core/src"],
+      "@lunero/core/*": ["../core/src/*"]
+    }
   },
   "include": ["src"],
+  "references": [{ "path": "../core" }],
   "exclude": ["src/__tests__"]
 }

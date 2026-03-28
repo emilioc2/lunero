@@ -36,8 +36,18 @@ export default function FlowSheetDetailPage() {
 
   // ── Derived data ───────────────────────────────────────────────────────
 
+  interface CategorySummaryRow {
+    categoryId: string;
+    categoryName: string;
+    entryType: string;
+    projectedAmount: number;
+    actualAmount: number;
+    statusColor: string;
+    [key: string]: unknown;
+  }
+
   const { incomeCategories, expenseCategories } = useMemo(() => {
-    const byCategory = projectionSummary?.byCategory ?? [];
+    const byCategory: CategorySummaryRow[] = projectionSummary?.byCategory ?? [];
     return {
       incomeCategories: byCategory.filter((c) => c.entryType === 'income'),
       expenseCategories: byCategory.filter((c) => c.entryType === 'expense'),
