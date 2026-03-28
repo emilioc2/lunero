@@ -1,5 +1,7 @@
 package com.lunero.trend;
 
+import com.lunero.category.CategoryEntity;
+import com.lunero.category.CategoryRepository;
 import com.lunero.common.exception.EntityNotFoundException;
 import com.lunero.entry.EntryEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
@@ -20,15 +23,20 @@ import static org.mockito.Mockito.*;
 class TrendServiceTest {
 
     @Mock private TrendRepository trendRepository;
+    @Mock private CategoryRepository categoryRepository;
 
     private TrendService trendService;
 
     private final UUID userId     = UUID.randomUUID();
     private final UUID categoryId = UUID.randomUUID();
+    private final String categoryName = "TestCategory";
 
     @BeforeEach
     void setUp() {
-        trendService = new TrendService(trendRepository);
+        trendService = new TrendService(trendRepository, categoryRepository);
+        // Stub category lookup so categoryId resolves to categoryName
+        lenient().when(categoryRepository.findById(categoryId))
+                .thenReturn(Optional.of(CategoryEntity.builder().id(categoryId).name(categoryName).entryType("expense").build()));
     }
 
     // ── getTrends — weekly ────────────────────────────────────────────────────
@@ -174,23 +182,23 @@ class TrendServiceTest {
         LocalDate from = LocalDate.of(2024, 1, 1);
         LocalDate to   = LocalDate.of(2024, 1, 31);
 
-        when(trendRepository.findByUserIdAndDateRangeAndCategory(userId, from, to, categoryId))
+        when(trendRepository.findByUserIdAndDateRangeAndCategory(userId, from, to, categoryName))
                 .thenReturn(List.of(entry("expense", new BigDecimal("200"), LocalDate.of(2024, 1, 5))));
 
         TrendData result = trendService.getTrends(userId, "monthly", from, to, categoryId);
 
         assertThat(result.periods().get(0).totalExpenses()).isEqualByComparingTo("200");
-        verify(trendRepository).findByUserIdAndDateRangeAndCategory(userId, from, to, categoryId);
+        verify(trendRepository).findByUserIdAndDateRangeAndCategory(userId, from, to, categoryName);
         verify(trendRepository, never()).findByUserIdAndDateRange(any(), any(), any());
     }
 
     @Test
     void getTrends_yearly_withCategoryFilter_callsFilteredQuery() {
-        when(trendRepository.findAllByUserIdAndCategory(userId, categoryId)).thenReturn(List.of());
+        when(trendRepository.findAllByUserIdAndCategory(userId, categoryName)).thenReturn(List.of());
 
         trendService.getTrends(userId, "yearly", null, null, categoryId);
 
-        verify(trendRepository).findAllByUserIdAndCategory(userId, categoryId);
+        verify(trendRepository).findAllByUserIdAndCategory(userId, categoryName);
         verify(trendRepository, never()).findAllByUserId(any());
     }
 
@@ -217,12 +225,12 @@ class TrendServiceTest {
         LocalDate end   = LocalDate.of(2024, 1, 31);
         String dataPointId = "monthly_2024-01-01_2024-01-31";
 
-        when(trendRepository.findByUserIdAndDateRangeAndCategory(userId, start, end, categoryId))
+        when(trendRepository.findByUserIdAndDateRangeAndCategory(userId, start, end, categoryName))
                 .thenReturn(List.of());
 
         trendService.getBreakdown(userId, dataPointId, categoryId);
 
-        verify(trendRepository).findByUserIdAndDateRangeAndCategory(userId, start, end, categoryId);
+        verify(trendRepository).findByUserIdAndDateRangeAndCategory(userId, start, end, categoryName);
     }
 
     @Test

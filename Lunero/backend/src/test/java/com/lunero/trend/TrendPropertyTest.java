@@ -1,5 +1,7 @@
 package com.lunero.trend;
 
+import com.lunero.category.CategoryEntity;
+import com.lunero.category.CategoryRepository;
 import com.lunero.entry.EntryEntity;
 import net.jqwik.api.*;
 import net.jqwik.api.constraints.IntRange;
@@ -9,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,7 +37,12 @@ import static org.mockito.Mockito.*;
 class TrendPropertyTest {
 
     private TrendService freshService(TrendRepository repo) {
-        return new TrendService(repo);
+        CategoryRepository catRepo = mock(CategoryRepository.class);
+        return new TrendService(repo, catRepo);
+    }
+
+    private TrendService freshService(TrendRepository repo, CategoryRepository catRepo) {
+        return new TrendService(repo, catRepo);
     }
 
     // ── Property 17: Trend Aggregation Correctness ────────────────────────────
@@ -261,6 +269,7 @@ class TrendPropertyTest {
 
         UUID userId     = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
+        String catName  = "FilteredCategory";
         LocalDate from  = LocalDate.of(2024, 1, 1);
         LocalDate to    = LocalDate.of(2024, 1, 31);
 
@@ -269,19 +278,23 @@ class TrendPropertyTest {
         for (int i = 0; i < entryCount; i++) {
             filteredEntries.add(EntryEntity.builder()
                     .id(UUID.randomUUID()).flowSheetId(UUID.randomUUID()).userId(userId)
-                    .entryType("expense").category(categoryId.toString())
+                    .entryType("expense").category(catName)
                     .amount(amount).currency("USD")
                     .entryDate(from.plusDays(i % 30)).isDeleted(false)
                     .build());
         }
 
         TrendRepository repo = mock(TrendRepository.class);
-        when(repo.findByUserIdAndDateRangeAndCategory(userId, from, to, categoryId))
+        when(repo.findByUserIdAndDateRangeAndCategory(userId, from, to, catName))
                 .thenReturn(filteredEntries);
 
-        freshService(repo).getTrends(userId, "monthly", from, to, categoryId);
+        CategoryRepository catRepo = mock(CategoryRepository.class);
+        when(catRepo.findById(categoryId)).thenReturn(Optional.of(
+                CategoryEntity.builder().id(categoryId).name(catName).entryType("expense").build()));
 
-        verify(repo).findByUserIdAndDateRangeAndCategory(userId, from, to, categoryId);
+        freshService(repo, catRepo).getTrends(userId, "monthly", from, to, categoryId);
+
+        verify(repo).findByUserIdAndDateRangeAndCategory(userId, from, to, catName);
         verify(repo, never()).findByUserIdAndDateRange(any(), any(), any());
     }
 
@@ -300,24 +313,29 @@ class TrendPropertyTest {
 
         UUID userId     = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
+        String catName  = "FilteredCategory";
 
         BigDecimal amount = BigDecimal.valueOf(baseAmount);
         List<EntryEntity> filteredEntries = new ArrayList<>();
         for (int i = 0; i < entryCount; i++) {
             filteredEntries.add(EntryEntity.builder()
                     .id(UUID.randomUUID()).flowSheetId(UUID.randomUUID()).userId(userId)
-                    .entryType("income").category(categoryId.toString())
+                    .entryType("income").category(catName)
                     .amount(amount).currency("USD")
                     .entryDate(LocalDate.of(2024, 1 + (i % 12), 1)).isDeleted(false)
                     .build());
         }
 
         TrendRepository repo = mock(TrendRepository.class);
-        when(repo.findAllByUserIdAndCategory(userId, categoryId)).thenReturn(filteredEntries);
+        when(repo.findAllByUserIdAndCategory(userId, catName)).thenReturn(filteredEntries);
 
-        freshService(repo).getTrends(userId, "yearly", null, null, categoryId);
+        CategoryRepository catRepo = mock(CategoryRepository.class);
+        when(catRepo.findById(categoryId)).thenReturn(Optional.of(
+                CategoryEntity.builder().id(categoryId).name(catName).entryType("income").build()));
 
-        verify(repo).findAllByUserIdAndCategory(userId, categoryId);
+        freshService(repo, catRepo).getTrends(userId, "yearly", null, null, categoryId);
+
+        verify(repo).findAllByUserIdAndCategory(userId, catName);
         verify(repo, never()).findAllByUserId(any());
     }
 
@@ -335,17 +353,22 @@ class TrendPropertyTest {
 
         UUID userId     = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
+        String catName  = "FilteredCategory";
         LocalDate start = LocalDate.of(2024, 1, 1);
         LocalDate end   = LocalDate.of(2024, 1, 7);
         String dataPointId = "weekly_2024-01-01_2024-01-07";
 
         TrendRepository repo = mock(TrendRepository.class);
-        when(repo.findByUserIdAndDateRangeAndCategory(userId, start, end, categoryId))
+        when(repo.findByUserIdAndDateRangeAndCategory(userId, start, end, catName))
                 .thenReturn(List.of());
 
-        freshService(repo).getBreakdown(userId, dataPointId, categoryId);
+        CategoryRepository catRepo = mock(CategoryRepository.class);
+        when(catRepo.findById(categoryId)).thenReturn(Optional.of(
+                CategoryEntity.builder().id(categoryId).name(catName).entryType("expense").build()));
 
-        verify(repo).findByUserIdAndDateRangeAndCategory(userId, start, end, categoryId);
+        freshService(repo, catRepo).getBreakdown(userId, dataPointId, categoryId);
+
+        verify(repo).findByUserIdAndDateRangeAndCategory(userId, start, end, catName);
         verify(repo, never()).findByUserIdAndDateRange(any(), any(), any());
     }
 
