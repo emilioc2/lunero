@@ -40,7 +40,7 @@ export function StepBudgetSetup({ defaultCurrency, onComplete, onBack }: Props) 
     await entryApi.create({
       flowSheetId,
       entryType: values.entryType,
-      categoryId: values.categoryId,
+      category: values.categoryId,
       amount: parseFloat(values.amount),
       currency: values.currency,
       entryDate: values.entryDate,
