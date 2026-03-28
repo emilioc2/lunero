@@ -127,7 +127,7 @@ class CategoryServiceTest {
     void deleteCategory_deletesWhenNoEntries() {
         CategoryEntity cat = buildCategory(categoryId, userId, "Empty", "expense", 0);
         when(categoryRepository.findByIdAndUserId(categoryId, userId)).thenReturn(Optional.of(cat));
-        when(entryRepository.existsByCategoryIdAndIsDeletedFalse(categoryId)).thenReturn(false);
+        when(entryRepository.existsByCategoryAndIsDeletedFalse("Empty")).thenReturn(false);
 
         categoryService.deleteCategory(userId, categoryId);
 
@@ -140,7 +140,7 @@ class CategoryServiceTest {
     void deleteCategory_throws409_whenEntriesExist() {
         CategoryEntity cat = buildCategory(categoryId, userId, "Used", "expense", 0);
         when(categoryRepository.findByIdAndUserId(categoryId, userId)).thenReturn(Optional.of(cat));
-        when(entryRepository.existsByCategoryIdAndIsDeletedFalse(categoryId)).thenReturn(true);
+        when(entryRepository.existsByCategoryAndIsDeletedFalse("Used")).thenReturn(true);
 
         assertThatThrownBy(() -> categoryService.deleteCategory(userId, categoryId))
                 .isInstanceOf(ConflictException.class)
@@ -169,11 +169,11 @@ class CategoryServiceTest {
 
         when(categoryRepository.findByIdAndUserId(fromId, userId)).thenReturn(Optional.of(source));
         when(categoryRepository.findByIdAndUserId(toId,   userId)).thenReturn(Optional.of(target));
-        when(entryRepository.reassignEntries(userId, fromId, toId)).thenReturn(3);
+        when(entryRepository.reassignEntries(userId, "Old", "New")).thenReturn(3);
 
         categoryService.reassignEntries(userId, fromId, toId);
 
-        verify(entryRepository).reassignEntries(userId, fromId, toId);
+        verify(entryRepository).reassignEntries(userId, "Old", "New");
         verify(projectionRepository).deleteAllByCategoryId(fromId);
         verify(categoryRepository).delete(source);
         verify(auditLogService).log(any(), eq("category"), eq(fromId.toString()), eq(AuditAction.DELETE));

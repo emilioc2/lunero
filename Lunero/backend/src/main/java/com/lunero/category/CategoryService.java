@@ -70,7 +70,7 @@ public class CategoryService {
     public void deleteCategory(UUID userId, UUID categoryId) {
         CategoryEntity category = getOwnedCategory(userId, categoryId);
 
-        if (entryRepository.existsByCategoryIdAndIsDeletedFalse(categoryId)) {
+        if (entryRepository.existsByCategoryAndIsDeletedFalse(category.getName())) {
             throw new ConflictException(
                     "Category has assigned entries. Reassign entries before deleting, or use the reassign endpoint.");
         }
@@ -98,7 +98,7 @@ public class CategoryService {
                     "Source type: " + source.getEntryType() + ", target type: " + target.getEntryType());
         }
 
-        int reassigned = entryRepository.reassignEntries(userId, fromId, toId);
+        int reassigned = entryRepository.reassignEntries(userId, source.getName(), target.getName());
         log.info("Reassigned {} entries from categoryId={} to categoryId={}", reassigned, fromId, toId);
 
         // Remove projections for the deleted category (Req 22.10)
