@@ -288,7 +288,7 @@ public class FlowSheetService {
                     .flowSheetId(sheet.getId())
                     .userId(sheet.getUserId())
                     .entryType(r.getEntryType())
-                    .categoryId(r.getCategoryId())
+                    .category(r.getCategoryId().toString())
                     .amount(r.getAmount())
                     .currency(r.getCurrency())
                     .entryDate(periodStart)

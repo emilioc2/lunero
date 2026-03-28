@@ -261,15 +261,15 @@ public class MiraService {
 
         for (OnboardingEntryRequest req : parsedEntries) {
             try {
-                UUID categoryId = resolveDefaultCategory(userId, req.entryType(), req.categoryId());
-                if (categoryId == null) {
+                String categoryName = resolveDefaultCategoryName(userId, req.entryType(), req.categoryId());
+                if (categoryName == null) {
                     log.warn("No default category found for type={} userId={}", req.entryType(), userId);
                     continue;
                 }
                 CreateEntryRequest createReq = new CreateEntryRequest(
                         sheet.getId(),
                         req.entryType(),
-                        categoryId,
+                        categoryName,
                         req.amount(),
                         req.currency() != null ? req.currency() : user.getDefaultCurrency(),
                         req.entryDate() != null ? req.entryDate() : LocalDate.now(),
@@ -342,11 +342,15 @@ public class MiraService {
         return entries;
     }
 
-    private UUID resolveDefaultCategory(UUID userId, String entryType, UUID explicitCategoryId) {
-        if (explicitCategoryId != null) return explicitCategoryId;
+    private String resolveDefaultCategoryName(UUID userId, String entryType, UUID explicitCategoryId) {
+        if (explicitCategoryId != null) {
+            return categoryRepository.findById(explicitCategoryId)
+                    .map(CategoryEntity::getName)
+                    .orElse("Uncategorized");
+        }
         return categoryRepository.findAllByUserIdOrderBySortOrderAsc(userId).stream()
                 .filter(c -> entryType.equals(c.getEntryType()))
-                .map(CategoryEntity::getId)
+                .map(CategoryEntity::getName)
                 .findFirst()
                 .orElse(null);
     }
@@ -448,7 +452,12 @@ public class MiraService {
         int updated = 0;
 
         for (ProjectionIntentItem item : items) {
-            UUID categoryId = resolveDefaultCategory(userId, item.entryType(), null);
+            // Projections still use category UUID
+            UUID categoryId = categoryRepository.findAllByUserIdOrderBySortOrderAsc(userId).stream()
+                    .filter(c -> item.entryType().equals(c.getEntryType()))
+                    .map(CategoryEntity::getId)
+                    .findFirst()
+                    .orElse(null);
             if (categoryId == null) continue;
             try {
                 projectionService.upsertProjection(userId, sheet.getId(), categoryId,

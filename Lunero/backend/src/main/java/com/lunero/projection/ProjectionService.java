@@ -113,11 +113,11 @@ public class ProjectionService {
         List<EntryEntity> entries =
                 entryRepository.findByFlowSheetIdAndIsDeletedFalse(flowSheetId);
 
-        // Build actual amounts per category
-        Map<UUID, BigDecimal> actualByCategory = new HashMap<>();
+        // Build actual amounts per category name
+        Map<String, BigDecimal> actualByCategory = new HashMap<>();
         for (EntryEntity e : entries) {
             BigDecimal amt = e.getConvertedAmount() != null ? e.getConvertedAmount() : e.getAmount();
-            actualByCategory.merge(e.getCategoryId(), amt, BigDecimal::add);
+            actualByCategory.merge(e.getCategory(), amt, BigDecimal::add);
         }
 
         // Build category lookup
@@ -140,7 +140,7 @@ public class ProjectionService {
             String entryType    = cat != null ? cat.getEntryType() : "expense";
 
             BigDecimal projected = proj.getProjectedAmount();
-            BigDecimal actual    = actualByCategory.getOrDefault(proj.getCategoryId(), BigDecimal.ZERO);
+            BigDecimal actual    = actualByCategory.getOrDefault(categoryName, BigDecimal.ZERO);
             String statusColor   = computeStatusColor(actual, projected, entryType);
 
             byCategory.add(new ProjectionSummaryResponse.CategoryRow(
