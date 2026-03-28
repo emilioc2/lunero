@@ -23,6 +23,7 @@ public class TrendService {
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
 
     private final TrendRepository trendRepository;
+    private final com.lunero.category.CategoryRepository categoryRepository;
 
     // ── Public API ────────────────────────────────────────────────────────────
 
@@ -59,8 +60,9 @@ public class TrendService {
     @Transactional(readOnly = true)
     public List<EntryEntity> getBreakdown(UUID userId, String dataPointId, UUID categoryId) {
         DataPointId parsed = parseDataPointId(dataPointId);
-        List<EntryEntity> entries = categoryId != null
-                ? trendRepository.findByUserIdAndDateRangeAndCategory(userId, parsed.start(), parsed.end(), categoryId)
+        String categoryName = resolveCategoryName(categoryId);
+        List<EntryEntity> entries = categoryName != null
+                ? trendRepository.findByUserIdAndDateRangeAndCategory(userId, parsed.start(), parsed.end(), categoryName)
                 : trendRepository.findByUserIdAndDateRange(userId, parsed.start(), parsed.end());
         return entries;
     }
@@ -147,6 +149,17 @@ public class TrendService {
         return (e.getConvertedAmount() != null) ? e.getConvertedAmount() : e.getAmount();
     }
 
+    /**
+     * Resolves a category UUID to its name string for entry filtering.
+     * Returns null if categoryId is null (no filter).
+     */
+    private String resolveCategoryName(UUID categoryId) {
+        if (categoryId == null) return null;
+        return categoryRepository.findById(categoryId)
+                .map(com.lunero.category.CategoryEntity::getName)
+                .orElse(null);
+    }
+
     private List<EntryEntity> entriesInRange(List<EntryEntity> entries, LocalDate start, LocalDate end) {
         return entries.stream()
                 .filter(e -> !e.getEntryDate().isBefore(start) && !e.getEntryDate().isAfter(end))
@@ -155,16 +168,17 @@ public class TrendService {
 
     private List<EntryEntity> fetchEntries(UUID userId, String view, LocalDate from, LocalDate to, UUID categoryId) {
         boolean isYearly = "yearly".equals(view);
+        String categoryName = resolveCategoryName(categoryId);
         if (isYearly) {
-            return categoryId != null
-                    ? trendRepository.findAllByUserIdAndCategory(userId, categoryId)
+            return categoryName != null
+                    ? trendRepository.findAllByUserIdAndCategory(userId, categoryName)
                     : trendRepository.findAllByUserId(userId);
         }
         // weekly / monthly require from/to
         Objects.requireNonNull(from, "from date is required for " + view + " view");
         Objects.requireNonNull(to,   "to date is required for "   + view + " view");
-        return categoryId != null
-                ? trendRepository.findByUserIdAndDateRangeAndCategory(userId, from, to, categoryId)
+        return categoryName != null
+                ? trendRepository.findByUserIdAndDateRangeAndCategory(userId, from, to, categoryName)
                 : trendRepository.findByUserIdAndDateRange(userId, from, to);
     }
 

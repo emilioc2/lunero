@@ -46,7 +46,7 @@ public interface TrendRepository extends JpaRepository<EntryEntity, UUID> {
     List<EntryEntity> findAllByUserId(@Param("userId") UUID userId);
 
     /**
-     * Returns all non-deleted entries for a user within a date range, filtered by category.
+     * Returns all non-deleted entries for a user within a date range, filtered by category name.
      */
     @Query("""
             SELECT e FROM EntryEntity e
@@ -54,26 +54,26 @@ public interface TrendRepository extends JpaRepository<EntryEntity, UUID> {
               AND e.isDeleted = false
               AND e.entryDate >= :from
               AND e.entryDate <= :to
-              AND e.categoryId = :categoryId
+              AND e.category = :category
             ORDER BY e.entryDate ASC
             """)
     List<EntryEntity> findByUserIdAndDateRangeAndCategory(
             @Param("userId") UUID userId,
             @Param("from") LocalDate from,
             @Param("to") LocalDate to,
-            @Param("categoryId") UUID categoryId);
+            @Param("category") String category);
 
     /**
-     * Returns all non-deleted entries for a user filtered by category (no date filter).
+     * Returns all non-deleted entries for a user filtered by category name (no date filter).
      */
     @Query("""
             SELECT e FROM EntryEntity e
             WHERE e.userId = :userId
               AND e.isDeleted = false
-              AND e.categoryId = :categoryId
+              AND e.category = :category
             ORDER BY e.entryDate ASC
             """)
     List<EntryEntity> findAllByUserIdAndCategory(
             @Param("userId") UUID userId,
-            @Param("categoryId") UUID categoryId);
+            @Param("category") String category);
 }
