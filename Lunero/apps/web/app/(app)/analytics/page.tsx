@@ -18,7 +18,7 @@ const CATEGORY_COLORS = [
 ];
 
 /** Derive CategoryExpenseData from entries + categories for the pie chart. */
-export function buildCategoryExpenseData(
+function buildCategoryExpenseData(
   entries: Array<{ entryType: string; categoryId: string; amount: number; isDeleted: boolean }>,
   categories: Array<{ id: string; name: string; entryType: string }>,
 ): CategoryExpenseData[] {
