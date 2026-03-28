@@ -29,6 +29,13 @@ export const lightTheme = createTheme({
   savings: COLOR.savingsWarmEarth,
   warmNeutral: COLOR.warmNeutral,
 
+  // Positive / negative
+  positiveGreen: COLOR.positiveGreen,
+  positiveBgGreen: COLOR.positiveBgGreen,
+  positiveTextGreen: COLOR.positiveTextGreen,
+  negativeBgRed: COLOR.negativeBgRed,
+  todayHighlight: COLOR.todayHighlight,
+
   // Input
   inputBackground: COLOR.white,
   inputBorder: COLOR.stone300,
@@ -62,6 +69,13 @@ export const darkTheme = createTheme({
   expense: COLOR.expenseClayRed,
   savings: COLOR.savingsWarmEarth,
   warmNeutral: COLOR.warmNeutral,
+
+  // Positive / negative (same hues work in dark mode)
+  positiveGreen: COLOR.positiveGreen,
+  positiveBgGreen: '#064E3B',
+  positiveTextGreen: '#6EE7B7',
+  negativeBgRed: '#451A1A',
+  todayHighlight: COLOR.todayHighlight,
 
   // Input
   inputBackground: COLOR.stone800,

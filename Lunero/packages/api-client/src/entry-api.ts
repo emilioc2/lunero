@@ -4,16 +4,16 @@ import { apiClient } from './http';
 export interface CreateEntryDto {
   flowSheetId: string;
   entryType: 'income' | 'expense' | 'savings';
-  categoryId: string;
+  category: string;
   amount: number;
   currency: string;
-  entryDate: string; // DD/MM/YYYY
+  entryDate: string;
   note?: string;
   clientUpdatedAt: string;
 }
 
 export interface UpdateEntryDto {
-  categoryId?: string;
+  category?: string;
   amount?: number;
   currency?: string;
   entryDate?: string;

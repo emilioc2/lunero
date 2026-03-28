@@ -12,10 +12,9 @@ export interface CalendarGridProps {
   onDaySelect: (isoDate: string) => void;
 }
 
-const CATEGORY_COLORS: Record<EntryType, string> = {
-  income: '#6B6F69',
+const DOT_COLORS: Record<'income' | 'expense', string> = {
+  income: '#22C55E',
   expense: '#C86D5A',
-  savings: '#C4A484',
 };
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -28,19 +27,15 @@ function toIsoDate(d: Date): string {
 }
 
 /**
- * Computes the dominant entry type for a day.
- * Validates Property 16: Calendar Dominant Type Computation.
+ * Returns which entry types are present on a given day.
+ * Used to render individual colored dots per type (Req 17.5, 17.6, 17.7).
  */
-function dominantType(dayEntries: Entry[]): EntryType | null {
-  if (dayEntries.length === 0) return null;
-  const totals: Record<EntryType, number> = { income: 0, expense: 0, savings: 0 };
+function entryTypesPresent(dayEntries: Entry[]): Set<EntryType> {
+  const types = new Set<EntryType>();
   for (const e of dayEntries) {
-    totals[e.entryType] += e.convertedAmount ?? e.amount;
+    types.add(e.entryType);
   }
-  return (Object.entries(totals) as [EntryType, number][]).reduce(
-    (best, [type, total]) => (total > totals[best] ? type : best),
-    'income' as EntryType,
-  );
+  return types;
 }
 
 export function CalendarGrid({
@@ -83,11 +78,6 @@ export function CalendarGrid({
   const periodStart = startDate.slice(0, 10);
   const periodEnd = endDate.slice(0, 10);
 
-  /**
-   * Arrow key navigation within the grid.
-   * Left/Right move by 1 day, Up/Down move by 7 days (one row).
-   * Focus is moved to the target cell if it exists and is in-period.
-   */
   const handleGridKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
     const grid = gridRef.current;
     if (!grid) return;
@@ -124,9 +114,9 @@ export function CalendarGrid({
             style={{
               flex: 1,
               textAlign: 'center',
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: 500,
-              color: '#A8A29E',
+              color: 'var(--placeholderColor, #78716C)',
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
               paddingBottom: 8,
@@ -154,10 +144,9 @@ export function CalendarGrid({
           const isoDate = toIsoDate(new Date(displayYear, displayMonth, day));
           const isInPeriod = isoDate >= periodStart && isoDate <= periodEnd;
           const dayEntries = entriesByDate[isoDate] ?? [];
-          const dominant = dominantType(dayEntries);
+          const types = entryTypesPresent(dayEntries);
           const isSelected = isoDate === selectedDate;
           const isToday = isoDate === toIsoDate(new Date());
-          const dotColor = dominant ? CATEGORY_COLORS[dominant] : null;
 
           return (
             <DayCell
@@ -167,7 +156,8 @@ export function CalendarGrid({
               isInPeriod={isInPeriod}
               isSelected={isSelected}
               isToday={isToday}
-              dotColor={dotColor}
+              hasIncome={types.has('income')}
+              hasExpense={types.has('expense')}
               entryCount={dayEntries.length}
               onSelect={onDaySelect}
             />
@@ -186,7 +176,8 @@ interface DayCellProps {
   isInPeriod: boolean;
   isSelected: boolean;
   isToday: boolean;
-  dotColor: string | null;
+  hasIncome: boolean;
+  hasExpense: boolean;
   entryCount: number;
   onSelect: (isoDate: string) => void;
 }
@@ -197,12 +188,12 @@ function DayCell({
   isInPeriod,
   isSelected,
   isToday,
-  dotColor,
+  hasIncome,
+  hasExpense,
   entryCount,
   onSelect,
 }: DayCellProps) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Enter/Space activate the cell; arrow keys are handled at the grid level
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       if (isInPeriod) onSelect(isoDate);
@@ -210,7 +201,6 @@ function DayCell({
   };
 
   const ariaLabel = [
-    // Use T00:00:00 to avoid UTC→local day-shift on date-only strings (Requirement 15.3)
     new Date(`${isoDate}T00:00:00`).toLocaleDateString(undefined, {
       weekday: 'long',
       month: 'long',
@@ -221,6 +211,9 @@ function DayCell({
   ]
     .filter(Boolean)
     .join(', ');
+
+  // Today uses #6366F1 background (Req 17.8)
+  const todayBg = '#6366F1';
 
   return (
     <div
@@ -245,8 +238,8 @@ function DayCell({
         borderRadius: 8,
         cursor: isInPeriod ? 'pointer' : 'default',
         opacity: isInPeriod ? 1 : 0.3,
-        backgroundColor: isSelected ? '#44403C' : isToday ? '#F5F5F4' : 'transparent',
-        border: isToday && !isSelected ? '1px solid #D6D3D1' : '1px solid transparent',
+        backgroundColor: isSelected ? 'var(--color, #44403C)' : isToday ? todayBg : 'transparent',
+        border: '1px solid transparent',
         transition: 'background 0.12s',
         minHeight: 52,
         outline: 'none',
@@ -254,9 +247,9 @@ function DayCell({
     >
       <span
         style={{
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: isToday ? 600 : 400,
-          color: isSelected ? '#FAFAF9' : isToday ? '#1C1917' : '#44403C',
+          color: isSelected || isToday ? '#FFFFFF' : 'var(--color, #1C1917)',
           lineHeight: 1,
         }}
         aria-hidden="true"
@@ -264,20 +257,39 @@ function DayCell({
         {day}
       </span>
 
-      {dotColor ? (
-        <span
-          aria-hidden="true"
-          style={{
-            width: 5,
-            height: 5,
-            borderRadius: '50%',
-            backgroundColor: isSelected ? '#FAFAF9' : dotColor,
-            flexShrink: 0,
-          }}
-        />
-      ) : (
-        <span style={{ width: 5, height: 5, flexShrink: 0 }} aria-hidden="true" />
-      )}
+      {/* Transaction dots: individual per type (Req 17.5, 17.6, 17.7) */}
+      <span
+        style={{ display: 'flex', gap: 3, height: 6, alignItems: 'center' }}
+        aria-hidden="true"
+      >
+        {hasIncome && (
+          <span
+            data-dot="income"
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              backgroundColor: isSelected ? '#FAFAF9' : DOT_COLORS.income,
+              flexShrink: 0,
+            }}
+          />
+        )}
+        {hasExpense && (
+          <span
+            data-dot="expense"
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              backgroundColor: isSelected ? '#FAFAF9' : DOT_COLORS.expense,
+              flexShrink: 0,
+            }}
+          />
+        )}
+        {!hasIncome && !hasExpense && (
+          <span style={{ width: 6, height: 6, flexShrink: 0 }} />
+        )}
+      </span>
     </div>
   );
 }

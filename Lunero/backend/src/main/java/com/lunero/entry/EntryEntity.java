@@ -34,8 +34,8 @@ public class EntryEntity {
     @Column(name = "entry_type", nullable = false, length = 20)
     private String entryType;
 
-    @Column(name = "category_id", nullable = false)
-    private UUID categoryId;
+    @Column(name = "category", nullable = false)
+    private String category;
 
     @Column(name = "amount", nullable = false, precision = 18, scale = 4)
     private BigDecimal amount;

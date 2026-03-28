@@ -35,10 +35,9 @@ export default function CalendarPage() {
 
   // ── Navigation state ───────────────────────────────────────────────────────
   const initialMonth = useMemo(() => {
-    if (!flowSheet) return { month: new Date().getMonth(), year: new Date().getFullYear() };
-    const d = new Date(flowSheet.startDate);
-    return { month: d.getMonth(), year: d.getFullYear() };
-  }, [flowSheet]);
+    const now = new Date();
+    return { month: now.getMonth(), year: now.getFullYear() };
+  }, []);
 
   const [displayMonth, setDisplayMonth] = useState<number | null>(null);
   const [displayYear, setDisplayYear] = useState<number | null>(null);
@@ -50,7 +49,7 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined);
   const [modal, setModal] = useState<ModalState>({ type: 'closed' });
 
-  // ── Month navigation (task 21.4) ───────────────────────────────────────────
+  // ── Month navigation ──────────────────────────────────────────────────────
   const handlePrevMonth = useCallback(() => {
     setDisplayMonth((m) => {
       const cur = m ?? initialMonth.month;
@@ -73,7 +72,6 @@ export default function CalendarPage() {
     });
   }, [initialMonth]);
 
-  // Disable nav buttons when the adjacent month is entirely outside the period
   const canGoPrev = useMemo(() => {
     if (!flowSheet) return false;
     const periodStart = new Date(flowSheet.startDate);
@@ -105,7 +103,6 @@ export default function CalendarPage() {
     setSelectedDate((prev) => (prev === isoDate ? undefined : isoDate));
   }, []);
 
-  // Opens create modal with the clicked day pre-populated (task 21.3)
   const handleAddFromDay = useCallback((isoDate: string) => {
     setModal({ type: 'create', prefillDate: isoDate });
   }, []);
@@ -116,7 +113,7 @@ export default function CalendarPage() {
       const dto = {
         flowSheetId: flowSheet.id,
         entryType: values.entryType,
-        categoryId: values.categoryId,
+        category: values.categoryId,
         amount: parseFloat(values.amount),
         currency: values.currency,
         entryDate: values.entryDate,
@@ -126,6 +123,7 @@ export default function CalendarPage() {
 
       const optimistic: Entry = {
         ...dto,
+        categoryId: values.categoryId,
         id: `optimistic-${Date.now()}`,
         userId: '',
         convertedAmount: undefined,
@@ -158,7 +156,7 @@ export default function CalendarPage() {
       if (modal.type !== 'edit') return;
       const entry = modal.entry;
       const dto = {
-        categoryId: values.categoryId,
+        category: values.categoryId,
         amount: parseFloat(values.amount),
         currency: values.currency,
         entryDate: values.entryDate,
@@ -183,7 +181,10 @@ export default function CalendarPage() {
 
   if (sheetLoading || entriesLoading) {
     return (
-      <div role="status" aria-label="Loading calendar" className="cal-state">
+      <div role="status" aria-label="Loading calendar" style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        minHeight: 200, fontSize: 14, color: 'var(--placeholderColor, #78716C)',
+      }}>
         Loading calendar…
       </div>
     );
@@ -191,69 +192,99 @@ export default function CalendarPage() {
 
   if (!flowSheet) {
     return (
-      <div role="alert" className="cal-state cal-state--error">
+      <div role="alert" style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        minHeight: 200, fontSize: 14, color: 'var(--expense, #C86D5A)',
+      }}>
         No active FlowSheet found.
       </div>
     );
   }
 
   return (
-    <main className="cal-page" aria-label="Calendar view">
-      {/* Month navigation header (task 21.4) */}
-      <nav className="cal-nav" aria-label="Month navigation">
-        <button
-          type="button"
-          onClick={handlePrevMonth}
-          disabled={!canGoPrev}
-          aria-label="Previous month"
-          className="cal-nav-btn"
-        >
-          ‹
-        </button>
-        <h2 className="cal-nav-label" aria-live="polite" aria-atomic="true">
-          {monthLabel}
-        </h2>
-        <button
-          type="button"
-          onClick={handleNextMonth}
-          disabled={!canGoNext}
-          aria-label="Next month"
-          className="cal-nav-btn"
-        >
-          ›
-        </button>
-      </nav>
+    <main aria-label="Transaction Calendar" style={{
+      display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 720, width: '100%',
+      marginLeft: 'auto', marginRight: 'auto',
+    }}>
+      {/* Page title (Req 17.1) */}
+      <h1 style={{ fontSize: 20, fontWeight: 500, color: 'var(--color, #1C1917)', margin: 0 }}>
+        📅 Transaction Calendar
+      </h1>
 
-      {/* Calendar body: grid + optional day panel */}
-      <div className="cal-body">
-        <div className="cal-grid-wrap">
-          {/* CalendarGrid handles task 21.1 (colored dots), 21.5 (neutral empty cells) */}
-          <CalendarGrid
-            startDate={flowSheet.startDate}
-            endDate={flowSheet.endDate}
-            entries={storeEntries}
-            displayMonth={resolvedMonth}
-            displayYear={resolvedYear}
-            selectedDate={selectedDate}
-            onDaySelect={handleDaySelect}
-          />
-        </div>
+      {/* Calendar card (Req 17.3) */}
+      <div style={{
+        background: 'var(--surface1, #FFFFFF)', border: '1px solid var(--borderColor, #E7E5E4)', borderRadius: 12,
+        padding: 20, display: 'flex', flexDirection: 'column', gap: 16,
+      }}>
+        {/* Month nav: label left, arrows right (Req 17.4) */}
+        <nav aria-label="Month navigation" style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <h2 aria-live="polite" aria-atomic="true" style={{
+            fontSize: 16, fontWeight: 500, color: 'var(--color, #1C1917)', margin: 0,
+          }}>
+            {monthLabel}
+          </h2>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              type="button"
+              onClick={handlePrevMonth}
+              disabled={!canGoPrev}
+              aria-label="Previous month"
+              style={{
+                background: 'transparent', border: '1px solid var(--borderColorHover, #D6D3D1)', borderRadius: 8,
+                width: 32, height: 32, fontSize: 16, color: 'var(--color, #44403C)',
+                cursor: canGoPrev ? 'pointer' : 'default',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                opacity: canGoPrev ? 1 : 0.35,
+              }}
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              onClick={handleNextMonth}
+              disabled={!canGoNext}
+              aria-label="Next month"
+              style={{
+                background: 'transparent', border: '1px solid var(--borderColorHover, #D6D3D1)', borderRadius: 8,
+                width: 32, height: 32, fontSize: 16, color: 'var(--color, #44403C)',
+                cursor: canGoNext ? 'pointer' : 'default',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                opacity: canGoNext ? 1 : 0.35,
+              }}
+            >
+              →
+            </button>
+          </div>
+        </nav>
 
-        {/* Day detail panel — task 21.2 */}
-        {selectedDate && (
-          <CalendarDayPanel
-            selectedDate={selectedDate}
-            entries={storeEntries}
-            categories={categories}
-            defaultCurrency={defaultCurrency}
-            onAddEntry={handleAddFromDay}
-            onEditEntry={(entry) => setModal({ type: 'edit', entry })}
-            onClose={() => setSelectedDate(undefined)}
-          />
-        )}
+        {/* Calendar grid (Req 17.2) */}
+        <CalendarGrid
+          startDate={flowSheet.startDate}
+          endDate={flowSheet.endDate}
+          entries={storeEntries}
+          displayMonth={resolvedMonth}
+          displayYear={resolvedYear}
+          selectedDate={selectedDate}
+          onDaySelect={handleDaySelect}
+        />
       </div>
 
-      {/* Entry modal — create with pre-populated date (task 21.3) */}
+      {/* Day detail panel */}
+      {selectedDate && (
+        <CalendarDayPanel
+          selectedDate={selectedDate}
+          entries={storeEntries}
+          categories={categories}
+          defaultCurrency={defaultCurrency}
+          onAddEntry={handleAddFromDay}
+          onEditEntry={(entry) => setModal({ type: 'edit', entry })}
+          onClose={() => setSelectedDate(undefined)}
+        />
+      )}
+
+      {/* Entry modal — create with pre-populated date */}
       {modal.type === 'create' && (
         <EntryModal
           mode="create"
@@ -281,37 +312,12 @@ export default function CalendarPage() {
       )}
 
       <style>{`
-        .cal-page { display: flex; flex-direction: column; gap: 20px; height: 100%; }
-        .cal-nav { display: flex; align-items: center; gap: 16px; }
-        .cal-nav-label {
-          font-size: 16px; font-weight: 500; color: #1C1917; margin: 0;
-          min-width: 180px; text-align: center;
+        .cal-day-cell:hover[data-in-period="true"]:not([data-selected="true"]):not([data-today="true"]) {
+          background-color: var(--backgroundHover, #F5F5F4) !important;
         }
-        .cal-nav-btn {
-          background: none; border: 1px solid #D6D3D1; border-radius: 6px;
-          width: 32px; height: 32px; font-size: 18px; color: #44403C;
-          cursor: pointer; display: flex; align-items: center; justify-content: center;
-          transition: background 0.12s;
-        }
-        .cal-nav-btn:hover:not(:disabled) { background: #F5F5F4; }
-        .cal-nav-btn:disabled { opacity: 0.35; cursor: default; }
-        .cal-nav-btn:focus-visible { outline: 2px solid #44403C; outline-offset: 2px; }
-        .cal-body {
-          display: flex; flex: 1; border: 1px solid #E7E5E4;
-          border-radius: 12px; overflow: hidden; background: #FFFFFF;
-        }
-        .cal-grid-wrap { flex: 1; padding: 20px; min-width: 0; }
-        .cal-day-cell:hover[data-in-period="true"]:not([data-selected="true"]) {
-          background-color: #F5F5F4 !important;
-        }
-        .cal-day-cell:focus-visible { outline: 2px solid #44403C; outline-offset: -2px; }
-        .cal-panel-add-btn:hover { border-color: #A8A29E !important; color: #44403C !important; }
-        .cal-panel-add-btn:focus-visible { outline: 2px solid #44403C; outline-offset: 2px; }
-        .cal-state {
-          display: flex; align-items: center; justify-content: center;
-          min-height: 200px; font-size: 14px; color: #78716C;
-        }
-        .cal-state--error { color: #C86D5A; }
+        .cal-day-cell:focus-visible { outline: 2px solid var(--color, #44403C); outline-offset: -2px; }
+        .cal-panel-add-btn:hover { border-color: var(--placeholderColor, #A8A29E) !important; color: var(--color, #44403C) !important; }
+        .cal-panel-add-btn:focus-visible { outline: 2px solid var(--color, #44403C); outline-offset: 2px; }
       `}</style>
     </main>
   );

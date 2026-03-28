@@ -16,8 +16,8 @@ public record CreateEntryRequest(
         @NotBlank(message = "entryType is required")
         String entryType,
 
-        @NotNull(message = "categoryId is required")
-        UUID categoryId,
+        @NotBlank(message = "category is required")
+        String category,
 
         @NotNull(message = "amount is required")
         BigDecimal amount,

@@ -1,7 +1,7 @@
 import { Text } from '@tamagui/core';
 import type { EntryType } from '@lunero/core';
 import { XStack, YStack } from './primitives';
-import { CategoryChip } from './category-chip';
+import { COLOR } from './tokens';
 
 export interface EntryRowProps {
   id: string;
@@ -151,23 +151,39 @@ function EntryRowInner({
       hoverStyle={interactive ? { backgroundColor: '$backgroundHover' } : undefined}
       focusStyle={interactive ? { backgroundColor: '$backgroundFocus' } : undefined}
     >
-      {/* Left: category chip + date */}
+      {/* Left: category + date */}
       <YStack gap="$1" flex={1} minWidth={0}>
-        <CategoryChip name={categoryName} entryType={entryType} />
+        <XStack alignItems="center" gap={8}>
+          {note ? (
+            <Text
+              fontSize={14}
+              fontWeight="500"
+              color="$color"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              aria-hidden={true}
+            >
+              {note}
+            </Text>
+          ) : null}
+          <Text
+            fontSize={12}
+            fontWeight="500"
+            color={
+              entryType === 'income'
+                ? (COLOR.positiveGreen as any)
+                : entryType === 'expense'
+                  ? (COLOR.expenseClayRed as any)
+                  : (COLOR.savingsWarmEarth as any)
+            }
+            aria-hidden={true}
+          >
+            {categoryName}
+          </Text>
+        </XStack>
         <Text fontSize={12} color="$placeholderColor" aria-hidden={true}>
           {formatDate(entryDate)}
         </Text>
-        {note ? (
-          <Text
-            fontSize={12}
-            color="$colorHover"
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            aria-hidden={true}
-          >
-            {note}
-          </Text>
-        ) : null}
       </YStack>
 
       {/* Right: amount */}

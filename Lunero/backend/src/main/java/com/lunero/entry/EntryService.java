@@ -60,7 +60,7 @@ public class EntryService {
                 .flowSheetId(dto.flowSheetId())
                 .userId(userId)
                 .entryType(dto.entryType())
-                .categoryId(dto.categoryId())
+                .category(dto.category())
                 .amount(dto.amount())
                 .currency(dto.currency())
                 .entryDate(dto.entryDate())
@@ -99,7 +99,7 @@ public class EntryService {
             entry.setAmount(dto.amount());
         }
         if (dto.entryType() != null)    entry.setEntryType(dto.entryType());
-        if (dto.categoryId() != null)   entry.setCategoryId(dto.categoryId());
+        if (dto.category() != null)    entry.setCategory(dto.category());
         if (dto.currency() != null)     entry.setCurrency(dto.currency());
         if (dto.entryDate() != null)    entry.setEntryDate(dto.entryDate());
         if (dto.note() != null)         entry.setNote(dto.note());
