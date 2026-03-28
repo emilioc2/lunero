@@ -103,7 +103,7 @@ class MiraServiceTest {
     private EntryEntity entry(String type, BigDecimal amount) {
         return EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(sheetId).userId(userId)
-                .entryType(type).categoryId(UUID.randomUUID())
+                .entryType(type).category("TestCategory")
                 .amount(amount).currency("USD")
                 .entryDate(LocalDate.now()).isDeleted(false)
                 .build();
@@ -315,7 +315,7 @@ class MiraServiceTest {
         stubGemini("income|3000|USD|Salary\nexpense|800|USD|Rent");
 
         EntryResponse fakeEntry = new EntryResponse(
-                UUID.randomUUID(), sheetId, userId, "income", UUID.randomUUID(),
+                UUID.randomUUID(), sheetId, userId, "income", "TestCategory",
                 new BigDecimal("3000"), "USD", null, null,
                 LocalDate.now(), "Salary", false, null, Instant.now(), Instant.now(), null
         );

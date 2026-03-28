@@ -348,7 +348,7 @@ class FlowSheetPropertyTest {
     private EntryEntity entry(String type, BigDecimal amount) {
         return EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(UUID.randomUUID()).userId(UUID.randomUUID())
-                .entryType(type).categoryId(UUID.randomUUID())
+                .entryType(type).category("TestCategory")
                 .amount(amount).currency("USD")
                 .entryDate(LocalDate.now()).isDeleted(false).build();
     }

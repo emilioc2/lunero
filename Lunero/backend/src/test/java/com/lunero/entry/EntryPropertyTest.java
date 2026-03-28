@@ -122,7 +122,7 @@ class EntryPropertyTest {
 
         EntryEntity income = EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(UUID.randomUUID()).userId(UUID.randomUUID())
-                .entryType("income").categoryId(UUID.randomUUID())
+                .entryType("income").category("TestCategory")
                 .amount(BigDecimal.valueOf(originalAmount))
                 .convertedAmount(BigDecimal.valueOf(convertedAmount))
                 .currency("EUR").entryDate(LocalDate.now()).isDeleted(false)
@@ -149,7 +149,7 @@ class EntryPropertyTest {
         for (int i = 0; i < deletedCount; i++) {
             entries.add(EntryEntity.builder()
                     .id(UUID.randomUUID()).flowSheetId(UUID.randomUUID()).userId(UUID.randomUUID())
-                    .entryType("income").categoryId(UUID.randomUUID())
+                    .entryType("income").category("TestCategory")
                     .amount(BigDecimal.valueOf(amount))
                     .currency("USD").entryDate(LocalDate.now()).isDeleted(true)
                     .build());
@@ -183,7 +183,7 @@ class EntryPropertyTest {
         UUID userId     = UUID.randomUUID();
 
         CreateEntryRequest req = new CreateEntryRequest(
-                sheetId, "expense", categoryId, amount,
+                sheetId, "expense", categoryId.toString(), amount,
                 "USD", LocalDate.now(), null, null);
 
         assertThatThrownBy(() -> h.entryService().createEntry(userId, req))
@@ -210,7 +210,7 @@ class EntryPropertyTest {
 
         EntryEntity existing = EntryEntity.builder()
                 .id(entryId).flowSheetId(sheetId).userId(userId)
-                .entryType("expense").categoryId(UUID.randomUUID())
+                .entryType("expense").category("TestCategory")
                 .amount(new BigDecimal("100")).currency("USD")
                 .entryDate(LocalDate.now()).isDeleted(false)
                 .build();
@@ -262,7 +262,7 @@ class EntryPropertyTest {
 
         EntryEntity saved = EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(sheetId).userId(userId)
-                .entryType("income").categoryId(categoryId)
+                .entryType("income").category(categoryId.toString())
                 .amount(amount).currency("USD")
                 .entryDate(LocalDate.now()).isDeleted(false)
                 .build();
@@ -276,7 +276,7 @@ class EntryPropertyTest {
         when(h.userRepo().findById(userId)).thenReturn(Optional.of(user));
 
         CreateEntryRequest req = new CreateEntryRequest(
-                sheetId, "income", categoryId, amount,
+                sheetId, "income", categoryId.toString(), amount,
                 "USD", LocalDate.now(), null, null);
 
         EntryResponse response = h.entryService().createEntry(userId, req);
@@ -310,7 +310,7 @@ class EntryPropertyTest {
     private EntryEntity entry(String type, BigDecimal amount) {
         return EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(UUID.randomUUID()).userId(UUID.randomUUID())
-                .entryType(type).categoryId(UUID.randomUUID())
+                .entryType(type).category("TestCategory")
                 .amount(amount).currency("USD")
                 .entryDate(LocalDate.now()).isDeleted(false)
                 .build();

@@ -269,7 +269,7 @@ class TrendServiceTest {
                 .flowSheetId(UUID.randomUUID())
                 .userId(userId)
                 .entryType(type)
-                .categoryId(categoryId)
+                .category(categoryId.toString())
                 .amount(amount)
                 .currency("USD")
                 .entryDate(date)

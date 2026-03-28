@@ -409,7 +409,7 @@ class FlowSheetServiceTest {
     private EntryEntity buildEntry(String type, BigDecimal amount, BigDecimal convertedAmount) {
         return EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(sheetId).userId(userId)
-                .entryType(type).categoryId(UUID.randomUUID())
+                .entryType(type).category("TestCategory")
                 .amount(amount).currency("USD").convertedAmount(convertedAmount)
                 .entryDate(LocalDate.now()).isDeleted(false)
                 .createdAt(Instant.now()).updatedAt(Instant.now())

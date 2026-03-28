@@ -68,7 +68,7 @@ class CurrencyPropertyTest {
         Fixture fixture = buildFixture(currency, currency, buildRates());
 
         CreateEntryRequest req = new CreateEntryRequest(
-                fixture.sheetId(), "income", UUID.randomUUID(),
+                fixture.sheetId(), "income", "TestCategory",
                 amount, currency, LocalDate.now(), null, null);
 
         stubCreate(fixture, amount, currency);
@@ -102,7 +102,7 @@ class CurrencyPropertyTest {
         Fixture fixture = buildFixture(defaultCurrency, entryCurrency, buildRates());
 
         CreateEntryRequest req = new CreateEntryRequest(
-                fixture.sheetId(), "income", UUID.randomUUID(),
+                fixture.sheetId(), "income", "TestCategory",
                 amount, entryCurrency, LocalDate.now(), null, null);
 
         stubCreate(fixture, amount, entryCurrency);
@@ -145,7 +145,7 @@ class CurrencyPropertyTest {
         Fixture fixture = buildFixture(defaultCurrency, entryCurrency, Map.of());
 
         CreateEntryRequest req = new CreateEntryRequest(
-                fixture.sheetId(), "income", UUID.randomUUID(),
+                fixture.sheetId(), "income", "TestCategory",
                 amount, entryCurrency, LocalDate.now(), null, null);
 
         stubCreate(fixture, amount, entryCurrency);
@@ -243,7 +243,7 @@ class CurrencyPropertyTest {
                     .flowSheetId(e.getFlowSheetId())
                     .userId(e.getUserId())
                     .entryType(e.getEntryType())
-                    .categoryId(e.getCategoryId())
+                    .category(e.getCategory())
                     .amount(e.getAmount())
                     .currency(e.getCurrency())
                     .convertedAmount(e.getConvertedAmount())

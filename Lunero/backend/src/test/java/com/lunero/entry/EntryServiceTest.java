@@ -93,7 +93,7 @@ class EntryServiceTest {
         when(flowSheetService.computeAvailableBalance(any())).thenReturn(new BigDecimal("1000"));
 
         CreateEntryRequest req = new CreateEntryRequest(
-                sheetId, "income", categoryId, new BigDecimal("1000"),
+                sheetId, "income", categoryId.toString(), new BigDecimal("1000"),
                 "USD", LocalDate.now(), null, null);
 
         EntryResponse response = entryService.createEntry(userId, req);
@@ -106,7 +106,7 @@ class EntryServiceTest {
     @Test
     void createEntry_throws400_whenAmountIsZero() {
         CreateEntryRequest req = new CreateEntryRequest(
-                sheetId, "expense", categoryId, BigDecimal.ZERO,
+                sheetId, "expense", categoryId.toString(), BigDecimal.ZERO,
                 "USD", LocalDate.now(), null, null);
 
         assertThatThrownBy(() -> entryService.createEntry(userId, req))
@@ -117,7 +117,7 @@ class EntryServiceTest {
     @Test
     void createEntry_throws400_whenAmountIsNegative() {
         CreateEntryRequest req = new CreateEntryRequest(
-                sheetId, "expense", categoryId, new BigDecimal("-50"),
+                sheetId, "expense", categoryId.toString(), new BigDecimal("-50"),
                 "USD", LocalDate.now(), null, null);
 
         assertThatThrownBy(() -> entryService.createEntry(userId, req))
@@ -131,7 +131,7 @@ class EntryServiceTest {
         when(flowSheetRepository.findByIdAndUserId(sheetId, userId)).thenReturn(Optional.of(lockedSheet));
 
         CreateEntryRequest req = new CreateEntryRequest(
-                sheetId, "expense", categoryId, new BigDecimal("100"),
+                sheetId, "expense", categoryId.toString(), new BigDecimal("100"),
                 "USD", LocalDate.now(), null, null);
 
         assertThatThrownBy(() -> entryService.createEntry(userId, req))
@@ -144,7 +144,7 @@ class EntryServiceTest {
         when(flowSheetRepository.findByIdAndUserId(sheetId, userId)).thenReturn(Optional.empty());
 
         CreateEntryRequest req = new CreateEntryRequest(
-                sheetId, "income", categoryId, new BigDecimal("100"),
+                sheetId, "income", categoryId.toString(), new BigDecimal("100"),
                 "USD", LocalDate.now(), null, null);
 
         assertThatThrownBy(() -> entryService.createEntry(userId, req))
@@ -286,7 +286,7 @@ class EntryServiceTest {
         when(flowSheetService.computeAvailableBalance(any())).thenReturn(new BigDecimal("-50"));
 
         CreateEntryRequest req = new CreateEntryRequest(
-                sheetId, "expense", categoryId, new BigDecimal("500"),
+                sheetId, "expense", categoryId.toString(), new BigDecimal("500"),
                 "USD", LocalDate.now(), null, null);
 
         entryService.createEntry(userId, req);
@@ -305,7 +305,7 @@ class EntryServiceTest {
         when(flowSheetService.computeAvailableBalance(any())).thenReturn(BigDecimal.ZERO);
 
         CreateEntryRequest req = new CreateEntryRequest(
-                sheetId, "expense", categoryId, new BigDecimal("100"),
+                sheetId, "expense", categoryId.toString(), new BigDecimal("100"),
                 "USD", LocalDate.now(), null, null);
 
         entryService.createEntry(userId, req);
@@ -365,7 +365,7 @@ class EntryServiceTest {
     private EntryEntity buildEntry(UUID id, String type, BigDecimal amount) {
         return EntryEntity.builder()
                 .id(id).flowSheetId(sheetId).userId(userId)
-                .entryType(type).categoryId(categoryId)
+                .entryType(type).category("TestCategory")
                 .amount(amount).currency("USD")
                 .entryDate(LocalDate.now()).isDeleted(false)
                 .createdAt(Instant.now()).updatedAt(Instant.now())

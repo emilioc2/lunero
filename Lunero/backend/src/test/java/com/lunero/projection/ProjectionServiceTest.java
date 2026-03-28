@@ -341,7 +341,7 @@ class ProjectionServiceTest {
     private EntryEntity buildEntry(String type, BigDecimal amount, BigDecimal convertedAmount) {
         return EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(sheetId).userId(userId)
-                .entryType(type).categoryId(categoryId)
+                .entryType(type).category(categoryId.toString())
                 .amount(amount).convertedAmount(convertedAmount)
                 .currency("USD").entryDate(LocalDate.now()).isDeleted(false)
                 .createdAt(Instant.now()).updatedAt(Instant.now())

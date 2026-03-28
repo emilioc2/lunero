@@ -138,7 +138,7 @@ class TrendPropertyTest {
 
         EntryEntity entry = EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(UUID.randomUUID()).userId(userId)
-                .entryType("income").categoryId(UUID.randomUUID())
+                .entryType("income").category("TestCategory")
                 .amount(BigDecimal.valueOf(originalAmount))
                 .convertedAmount(BigDecimal.valueOf(convertedAmount))
                 .currency("EUR").entryDate(LocalDate.of(2024, 1, 15)).isDeleted(false)
@@ -229,7 +229,7 @@ class TrendPropertyTest {
         for (int i = 0; i < entryCount; i++) {
             entries.add(EntryEntity.builder()
                     .id(UUID.randomUUID()).flowSheetId(UUID.randomUUID()).userId(userId)
-                    .entryType("expense").categoryId(UUID.randomUUID())
+                    .entryType("expense").category("TestCategory")
                     .amount(amount).currency("USD")
                     .entryDate(start.plusDays(i % 28)).isDeleted(false)
                     .build());
@@ -269,7 +269,7 @@ class TrendPropertyTest {
         for (int i = 0; i < entryCount; i++) {
             filteredEntries.add(EntryEntity.builder()
                     .id(UUID.randomUUID()).flowSheetId(UUID.randomUUID()).userId(userId)
-                    .entryType("expense").categoryId(categoryId)
+                    .entryType("expense").category(categoryId.toString())
                     .amount(amount).currency("USD")
                     .entryDate(from.plusDays(i % 30)).isDeleted(false)
                     .build());
@@ -306,7 +306,7 @@ class TrendPropertyTest {
         for (int i = 0; i < entryCount; i++) {
             filteredEntries.add(EntryEntity.builder()
                     .id(UUID.randomUUID()).flowSheetId(UUID.randomUUID()).userId(userId)
-                    .entryType("income").categoryId(categoryId)
+                    .entryType("income").category(categoryId.toString())
                     .amount(amount).currency("USD")
                     .entryDate(LocalDate.of(2024, 1 + (i % 12), 1)).isDeleted(false)
                     .build());
@@ -377,7 +377,7 @@ class TrendPropertyTest {
     private EntryEntity entry(UUID userId, String type, BigDecimal amount, LocalDate date) {
         return EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(UUID.randomUUID()).userId(userId)
-                .entryType(type).categoryId(UUID.randomUUID())
+                .entryType(type).category("TestCategory")
                 .amount(amount).currency("USD")
                 .entryDate(date).isDeleted(false)
                 .build();

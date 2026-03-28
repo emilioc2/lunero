@@ -384,7 +384,7 @@ class ProjectionPropertyTest {
     private EntryEntity entry(UUID userId, UUID sheetId, String type, BigDecimal amount) {
         return EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(sheetId).userId(userId)
-                .entryType(type).categoryId(UUID.randomUUID())
+                .entryType(type).category("TestCategory")
                 .amount(amount).currency("USD")
                 .entryDate(LocalDate.now()).isDeleted(false)
                 .createdAt(Instant.now()).updatedAt(Instant.now())
@@ -395,7 +395,7 @@ class ProjectionPropertyTest {
                                           String type, BigDecimal amount) {
         return EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(sheetId).userId(userId)
-                .entryType(type).categoryId(categoryId)
+                .entryType(type).category(categoryId.toString())
                 .amount(amount).currency("USD")
                 .entryDate(LocalDate.now()).isDeleted(false)
                 .createdAt(Instant.now()).updatedAt(Instant.now())

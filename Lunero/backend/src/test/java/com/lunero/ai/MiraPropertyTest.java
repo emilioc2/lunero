@@ -140,7 +140,7 @@ class MiraPropertyTest {
         // Single income entry = currentBalance
         EntryEntity incomeEntry = EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(sheetId).userId(userId)
-                .entryType("income").categoryId(UUID.randomUUID())
+                .entryType("income").category("TestCategory")
                 .amount(balance).currency("USD")
                 .entryDate(LocalDate.of(2024, 1, 5)).isDeleted(false).build();
 
@@ -203,7 +203,7 @@ class MiraPropertyTest {
 
         EntryEntity incomeEntry = EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(sheetId).userId(userId)
-                .entryType("income").categoryId(UUID.randomUUID())
+                .entryType("income").category("TestCategory")
                 .amount(income).currency("USD")
                 .entryDate(LocalDate.of(2024, 1, 5)).isDeleted(false).build();
 
@@ -264,7 +264,7 @@ class MiraPropertyTest {
         // Negative balance scenario
         EntryEntity expenseEntry = EntryEntity.builder()
                 .id(UUID.randomUUID()).flowSheetId(sheetId).userId(userId)
-                .entryType("expense").categoryId(UUID.randomUUID())
+                .entryType("expense").category("TestCategory")
                 .amount(BigDecimal.valueOf(expenseAmount)).currency("USD")
                 .entryDate(LocalDate.of(2024, 1, 5)).isDeleted(false).build();
 
@@ -344,14 +344,14 @@ class MiraPropertyTest {
         for (int i = 0; i < incomeCount; i++) {
             list.add(EntryEntity.builder()
                     .id(UUID.randomUUID()).flowSheetId(sheetId).userId(userId)
-                    .entryType("income").categoryId(UUID.randomUUID())
+                    .entryType("income").category("TestCategory")
                     .amount(amount).currency("USD")
                     .entryDate(LocalDate.of(2024, 1, 5)).isDeleted(false).build());
         }
         for (int i = 0; i < expenseCount; i++) {
             list.add(EntryEntity.builder()
                     .id(UUID.randomUUID()).flowSheetId(sheetId).userId(userId)
-                    .entryType("expense").categoryId(UUID.randomUUID())
+                    .entryType("expense").category("TestCategory")
                     .amount(amount).currency("USD")
                     .entryDate(LocalDate.of(2024, 1, 10)).isDeleted(false).build());
         }

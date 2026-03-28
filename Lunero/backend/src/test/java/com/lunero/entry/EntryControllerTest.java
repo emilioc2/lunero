@@ -94,7 +94,7 @@ class EntryControllerTest {
                 {
                   "flowSheetId": "%s",
                   "entryType": "income",
-                  "categoryId": "%s",
+                  "category": "%s",
                   "amount": 1000,
                   "currency": "USD",
                   "entryDate": "2024-01-15"
@@ -115,7 +115,7 @@ class EntryControllerTest {
                 {
                   "flowSheetId": "%s",
                   "entryType": "income",
-                  "categoryId": "%s",
+                  "category": "%s",
                   "currency": "USD",
                   "entryDate": "2024-01-15"
                 }
@@ -136,7 +136,7 @@ class EntryControllerTest {
                 {
                   "flowSheetId": "%s",
                   "entryType": "expense",
-                  "categoryId": "%s",
+                  "category": "%s",
                   "amount": 0,
                   "currency": "USD",
                   "entryDate": "2024-01-15"
@@ -158,7 +158,7 @@ class EntryControllerTest {
                 {
                   "flowSheetId": "%s",
                   "entryType": "expense",
-                  "categoryId": "%s",
+                  "category": "%s",
                   "amount": 100,
                   "currency": "USD",
                   "entryDate": "2024-01-15"
@@ -269,7 +269,7 @@ class EntryControllerTest {
     private EntryEntity buildEntry(UUID id, String type, BigDecimal amount) {
         return EntryEntity.builder()
                 .id(id).flowSheetId(sheetId).userId(userId)
-                .entryType(type).categoryId(categoryId)
+                .entryType(type).category("TestCategory")
                 .amount(amount).currency("USD")
                 .entryDate(LocalDate.now()).isDeleted(false)
                 .createdAt(Instant.now()).updatedAt(Instant.now())
@@ -278,7 +278,7 @@ class EntryControllerTest {
 
     private EntryResponse buildResponse(UUID id, String type, BigDecimal amount, BigDecimal balance) {
         return new EntryResponse(
-                id, sheetId, userId, type, categoryId,
+                id, sheetId, userId, type, categoryId.toString(),
                 amount, "USD", null, null,
                 LocalDate.now(), null, false, null,
                 Instant.now(), Instant.now(), balance
